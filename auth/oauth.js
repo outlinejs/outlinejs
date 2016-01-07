@@ -1,6 +1,6 @@
-import { OAUTH2_BASE_ENDPOINT, OAUTH2_CLIENT_ID, OAUTH2_CLIENT_SECRET } from '../../settings';
 import Base64 from 'base-64';
 import $ from 'jquery';
+import { settings } from '../contexts';
 
 export class Token {
 
@@ -29,11 +29,11 @@ export class Token {
 
 
   static passwordCredentialGrant(username, password) {
-    var authHeader = 'Basic ' + Base64.encode(OAUTH2_CLIENT_ID + ':' + OAUTH2_CLIENT_SECRET);
+    var authHeader = 'Basic ' + Base64.encode(settings.OAUTH2_CLIENT_ID + ':' + settings.OAUTH2_CLIENT_SECRET);
     return new Promise((resolve, reject) => {
       $.ajax({
         method: 'POST',
-        url: OAUTH2_BASE_ENDPOINT + 'token/',
+        url: settings.OAUTH2_BASE_ENDPOINT + 'token/',
         data: $.param({
           grant_type: 'password', //eslint-disable-line camelcase
           username: username,
@@ -55,11 +55,11 @@ export class Token {
   }
 
   static refreshTokenCredentialGrant(refreshToken) {
-    var authHeader = 'Basic ' + Base64.encode(OAUTH2_CLIENT_ID + ':' + OAUTH2_CLIENT_SECRET);
+    var authHeader = 'Basic ' + Base64.encode(settings.OAUTH2_CLIENT_ID + ':' + settings.OAUTH2_CLIENT_SECRET);
     return new Promise((resolve, reject) => {
       $.ajax({
         method: 'POST',
-        url: OAUTH2_BASE_ENDPOINT + 'token/',
+        url: settings.OAUTH2_BASE_ENDPOINT + 'token/',
         data: $.param({
           grant_type: 'refresh_token', //eslint-disable-line camelcase
           refresh_token: refreshToken //eslint-disable-line camelcase

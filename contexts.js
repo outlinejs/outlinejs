@@ -1,4 +1,6 @@
-import { MIDDLEWARE } from '../settings';
+let _globalContext = null;
+let _runtimeContext = null;
+export let settings = null;
 
 class GlobalContext {
   constructor() {
@@ -17,11 +19,8 @@ class GlobalContext {
 class RuntimeContext {
   constructor() {
     this._middleware = [];
-
-    var bulk = require('bulk-require');
-    var sections = bulk(__dirname + '/../', ['./**/middleware.js']);
-    for (var mid of MIDDLEWARE) {
-      this._middleware.push(new (sections[mid].middleware()));
+    for (var mid of settings.MIDDLEWARE) {
+      this._middleware.push(new mid.default()); //eslint-disable-line new-cap
     }
 
   }
@@ -31,13 +30,16 @@ class RuntimeContext {
   }
 }
 
-let _globalContext = new GlobalContext();
-let _runtimeContext = new RuntimeContext();
+export function _initContexts(settingsInstance) {
+  settings = settingsInstance;
+  _globalContext = new GlobalContext();
+  _runtimeContext = new RuntimeContext();
+}
 
-export function getGlobalContext() {
+export function globalContext() {
   return _globalContext;
 }
 
-export function getRuntimeContext() {
+export function runtimeContext() {
   return _runtimeContext;
 }

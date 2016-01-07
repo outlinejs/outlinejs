@@ -1,7 +1,7 @@
 import BackboneSubRoute from 'backbone.subroute';
-import { LOGIN_STATE } from '../settings';
+import { settings } from './contexts';
 import { Token } from './auth/oauth';
-import { getGlobalContext, getRuntimeContext } from './contexts';
+import { globalContext, runtimeContext } from './contexts';
 
 let _stateRouteMapping = {};
 
@@ -93,7 +93,7 @@ export class BaseRouter extends BackboneSubRoute {
       let rtObj = this.routes[rt];
       if (rtObj instanceof IncludeDefinition) {
         //instantiate sub router
-        new (rtObj.router(rt, options, mainElement)); //eslint-disable-line no-new
+        new rtObj.router(rt, options, mainElement); //eslint-disable-line new-cap
         delete this.routes[rt];
       } else {
         _stateRouteMapping[rtObj.state] = {route: rt, router: this};
@@ -107,7 +107,7 @@ export class BaseRouter extends BackboneSubRoute {
         element: mainElement
       };
       var promises = [];
-      for (var mid of getRuntimeContext().middleware) {
+      for (var mid of runtimeContext().middleware) {
         if (mid.preControllerInit) {
           promises.push(mid.preControllerInit());
         }
@@ -116,20 +116,20 @@ export class BaseRouter extends BackboneSubRoute {
       if (Controller.loginRequired) {
         var token = Token.getAccessToken();
         if (!token) {
-          var loginUrl = RouteUtils.reverse(LOGIN_STATE);
+          var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE);
           var nextUrl = encodeURIComponent(window.location.href);
           loginUrl = `${loginUrl}?next-url=${nextUrl}`;
           window.location.href = loginUrl;
         } else {
           Promise.all(promises).then(() => {
-            new Controller(routeContext, getGlobalContext()).init(...args);
+            new Controller(routeContext, globalContext()).init(...args);
           }).catch((error) => {
             console.log(error);
           });
         }
       } else {
         Promise.all(promises).then(() => {
-          new Controller(routeContext, getGlobalContext()).init(...args);
+          new Controller(routeContext, globalContext()).init(...args);
         }).catch((error) => {
           console.log(error);
         });

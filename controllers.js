@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import React from 'react'; //eslint-disable-line no-unused-vars
 
 export class BaseController {
   constructor(routeContext, globalContext, view = null) {

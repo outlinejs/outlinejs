@@ -9,11 +9,16 @@
   "license": "ISC",
   "devDependencies": {
     "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "bulk-require": "^0.2.1",
     "eslint": "^1.10.3"
   },
   "dependencies": {
     "babel-polyfill": "^6.3.14",
     "backbone": "^1.2.3",
+    "backbone.subroute": "^0.4.6",
+    "base-64": "^0.1.0",
+    "bulk-require": "^0.2.1",
     "fastclick": "^1.0.6",
     "jquery": "^2.1.4",
     "react": "^0.14.5",
