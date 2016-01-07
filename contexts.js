@@ -5,6 +5,7 @@ export let settings = null;
 class GlobalContext {
   constructor() {
     this._user = null;
+    this._state = null;
   }
 
   get user() {
@@ -13,6 +14,14 @@ class GlobalContext {
 
   set user(value) {
     this._user = value;
+  }
+
+  get currentState() {
+    return this._state;
+  }
+
+  set currentState(value) {
+    this._state = value;
   }
 }
 

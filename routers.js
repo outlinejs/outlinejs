@@ -79,8 +79,13 @@ export class RouteUtils {
         result[decodeURIComponent(k)] = decodeURIComponent(v);
       }
     }
-
     return result;
+  }
+
+  static isState(state, className = 'active') {
+    if (globalContext().state.indexOf(state) === 0) {
+      return className;
+    }
   }
 }
 
@@ -122,6 +127,7 @@ export class BaseRouter extends BackboneSubRoute {
           window.location.href = loginUrl;
         } else {
           Promise.all(promises).then(() => {
+            globalContext().state = urlDef.state;
             new Controller(routeContext, globalContext()).init(...args);
           }).catch((error) => {
             console.log(error);
@@ -129,6 +135,7 @@ export class BaseRouter extends BackboneSubRoute {
         }
       } else {
         Promise.all(promises).then(() => {
+          globalContext().state = urlDef.state;
           new Controller(routeContext, globalContext()).init(...args);
         }).catch((error) => {
           console.log(error);
