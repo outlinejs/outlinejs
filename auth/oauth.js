@@ -91,7 +91,7 @@ export class Token {
         if (now - creationDate > expiresIn - 10000) {
           Token.refreshTokenCredentialGrant(refreshToken).then((token) => {
             resolve(token);
-          }).catch((xhr) => {
+          }, (xhr) => {
             reject(xhr);
           });
         } else {

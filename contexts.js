@@ -1,5 +1,5 @@
-let _globalContext = null;
-let _runtimeContext = null;
+export let global = null;
+export let runtime = null;
 export let settings = null;
 
 class GlobalContext {
@@ -16,11 +16,11 @@ class GlobalContext {
     this._user = value;
   }
 
-  get currentState() {
+  get state() {
     return this._state;
   }
 
-  set currentState(value) {
+  set state(value) {
     this._state = value;
   }
 }
@@ -31,7 +31,6 @@ class RuntimeContext {
     for (var mid of settings.MIDDLEWARE) {
       this._middleware.push(new mid.default()); //eslint-disable-line new-cap
     }
-
   }
 
   get middleware() {
@@ -41,14 +40,6 @@ class RuntimeContext {
 
 export function _initContexts(settingsInstance) {
   settings = settingsInstance;
-  _globalContext = new GlobalContext();
-  _runtimeContext = new RuntimeContext();
-}
-
-export function globalContext() {
-  return _globalContext;
-}
-
-export function runtimeContext() {
-  return _runtimeContext;
+  global = new GlobalContext();
+  runtime = new RuntimeContext();
 }

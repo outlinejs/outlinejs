@@ -1,7 +1,6 @@
 import BackboneSubRoute from 'backbone.subroute';
 import { settings } from './contexts';
-import { Token } from './auth/oauth';
-import { globalContext, runtimeContext } from './contexts';
+import { global, runtime } from './contexts';
 
 let _stateRouteMapping = {};
 
@@ -83,7 +82,7 @@ export class RouteUtils {
   }
 
   static isState(state, className = 'active') {
-    if (globalContext().state.indexOf(state) === 0) {
+    if (global.state.indexOf(state) === 0) {
       return className;
     }
   }
@@ -98,7 +97,7 @@ export class BaseRouter extends BackboneSubRoute {
       let rtObj = this.routes[rt];
       if (rtObj instanceof IncludeDefinition) {
         //instantiate sub router
-        new rtObj.router(rt, options, mainElement); //eslint-disable-line new-cap
+        new rtObj.router(rt, options, mainElement); //eslint-disable-line new-cap, no-new
         delete this.routes[rt];
       } else {
         _stateRouteMapping[rtObj.state] = {route: rt, router: this};
@@ -111,36 +110,20 @@ export class BaseRouter extends BackboneSubRoute {
         currentState: urlDef.state,
         element: mainElement
       };
-      var promises = [];
-      for (var mid of runtimeContext().middleware) {
+      var midPromises = [];
+      for (var mid of runtime.middleware) {
         if (mid.preControllerInit) {
-          promises.push(mid.preControllerInit());
+          midPromises.push(mid.preControllerInit());
         }
       }
-
-      if (Controller.loginRequired) {
-        var token = Token.getAccessToken();
-        if (!token) {
-          var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE);
-          var nextUrl = encodeURIComponent(window.location.href);
-          loginUrl = `${loginUrl}?next-url=${nextUrl}`;
-          window.location.href = loginUrl;
-        } else {
-          Promise.all(promises).then(() => {
-            globalContext().state = urlDef.state;
-            new Controller(routeContext, globalContext()).init(...args);
-          }).catch((error) => {
-            console.log(error);
-          });
-        }
-      } else {
-        Promise.all(promises).then(() => {
-          globalContext().state = urlDef.state;
-          new Controller(routeContext, globalContext()).init(...args);
-        }).catch((error) => {
+      Promise.all(midPromises).then(() => {
+        global.state = urlDef.state;
+        new Controller(routeContext).init(...args);
+      }, (error) => {
+        if (error) {
           console.log(error);
-        });
-      }
+        }
+      });
     });
   }
 

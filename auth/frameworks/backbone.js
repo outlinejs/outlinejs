@@ -8,37 +8,25 @@ Backbone.sync = function (method, model, options = {}) {
     (resolve, reject) => {
 
       Token.validateToken().then((token) => {
-        token = `Bearer ${token}`;
-
         if (token) {
+          token = `Bearer ${token}`;
           options.headers = options.headers || {};
           options.headers.Authorization = token;
         }
 
-        sync(method, model, options).done(
+        sync(method, model, options).then(
           (data) => {
             resolve(data);
-          }
-        ).fail(
-          (xhr) => {
-            var errorObj = {
-              code: xhr.status,
-              error: xhr.statusText
-            };
-            // BAD REQUEST
-            if (xhr.status === 400) {
-              errorObj = {
-                code: xhr.status,
-                error: xhr.responseJSON
-              };
-            }
-            reject(errorObj);
-          }
-        );
+          }, (err) => {
+          reject(err);
+        });
 
-      }).catch((xhr) => {
-        console.log(xhr);
-        reject(xhr);
+      }, ($xhr) => {
+        reject({
+          code: $xhr.status,
+          errorText: $xhr.statusText,
+          errorJSON: $xhr.responseJSON
+        });
       });
 
     });

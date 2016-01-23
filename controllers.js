@@ -2,9 +2,8 @@ import ReactDOM from 'react-dom';
 import React from 'react'; //eslint-disable-line no-unused-vars
 
 export class BaseController {
-  constructor(routeContext, globalContext, view = null) {
+  constructor(routeContext, view = null) {
     this.routeContext = routeContext;
-    this._globalContext = globalContext;
     this._view = view;
     this._viewInstance = null;
   }
@@ -19,10 +18,6 @@ export class BaseController {
 
   get viewInstance() {
     return this._viewInstance;
-  }
-
-  get globalContext() {
-    return this._globalContext;
   }
 
   static get loginRequired() {
@@ -40,8 +35,8 @@ export class BaseLayoutController extends BaseController {
   // in base layout view
   // layout view correspond to BaseController view
   // and view correspond to the view to set in content property
-  constructor(routeContext, globalContext, view = null, layoutView = null) {
-    super(routeContext, globalContext, layoutView);
+  constructor(routeContext, view = null, layoutView = null) {
+    super(routeContext, layoutView);
     this._contentView = view;
   }
 
