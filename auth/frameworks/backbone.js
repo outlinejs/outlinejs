@@ -15,8 +15,8 @@ Backbone.sync = function (method, model, options = {}) {
         }
 
         sync(method, model, options).then(
-          (data) => {
-            resolve(data);
+          () => {
+            resolve(model);
           }, (err) => {
           reject(err);
         });
