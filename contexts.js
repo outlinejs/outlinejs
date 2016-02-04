@@ -6,6 +6,7 @@ class GlobalContext {
   constructor() {
     this._user = null;
     this._state = null;
+    this._language = null;
   }
 
   get user() {
@@ -22,6 +23,14 @@ class GlobalContext {
 
   set state(value) {
     this._state = value;
+  }
+
+  get language() {
+    return this._language;
+  }
+
+  set language(value) {
+    this._language = value;
   }
 }
 
