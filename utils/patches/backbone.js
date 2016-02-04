@@ -8,8 +8,8 @@ Backbone.sync = function (method, model, options) {
   return new Promise(
     (resolve, reject) => {
       sync(method, model, options).done(
-        (data) => {
-          resolve(data);
+        () => {
+          resolve(model);
         }
       ).fail(
         ($xhr) => {
