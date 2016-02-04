@@ -27,7 +27,7 @@ export class BaseController {
   render(context = {}) {
     var View = this._view; //eslint-disable-line no-unused-vars
     context.currentState = this.routeContext.currentState;
-    this._viewInstance = ReactDOM.render(<View {...context} controller={this} />, this.routeContext.element);
+    this._viewInstance = ReactDOM.render(<View {...context} delegate={this} />, this.routeContext.element);
   }
 }
 

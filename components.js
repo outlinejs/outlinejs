@@ -6,7 +6,7 @@ import ReactStateSetters from 'react/lib/ReactStateSetters';
 export class BaseComponent extends React.Component {
   constructor(...args) {
     super(...args);
-    this._controller = this;
+    this._delegate = null;
   }
 
   linkState(key) {
@@ -38,8 +38,18 @@ export class BaseComponent extends React.Component {
     this.setState(state);
   }
 
-  get controller() {
-    return this.props.controller || this._controller;
+  set delegate(value) {
+    this._delegate = value;
+    this.props.delegate = value;
+  }
+
+  get delegate() {
+    if (this._delegate !== this.props.delegate) {
+      this._delegate = this.props.delegate;
+    }
+    if (!this._delegate) {
+      this._delegate = this;
+    }
+    return this._delegate;
   }
 }
-
