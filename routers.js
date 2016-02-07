@@ -1,5 +1,6 @@
-import BackboneSubRoute from 'backbone.subroute';
 import { global, runtime } from './contexts';
+import crossroads from 'crossroads';
+import hasher from 'hasher';
 
 let _stateRouteMapping = {};
 
@@ -37,20 +38,21 @@ export function include(router) {
 }
 
 export class RouteUtils {
-  static _urlParamsReplace(url, params) { //eslint-disable-line no-shadow
-    for (let pkey of Object.keys(params)) {
-      let beforeReplace = url;
-      url = url.replace(`:${pkey}`, params[pkey]);
-      if (beforeReplace === url) {
-        throw `Unable to find reverse url for "${beforeReplace}" with params ${JSON.stringify(params)}.`;
-      }
+  static listen(routerClass) {
+    new routerClass(); //eslint-disable-line no-unused-vars, new-cap, no-new
+
+    function parseHash(newHash) {
+      crossroads.parse(newHash);
     }
-    return url;
+
+    hasher.initialized.add(parseHash);
+    hasher.changed.add(parseHash);
+    hasher.prependHash = '';
+    hasher.init();
   }
 
   static reverse(state, params = {}, prependHash = true) {
-    var url = _stateRouteMapping[state].route; //eslint-disable-line no-shadow
-    url = RouteUtils._urlParamsReplace(url, params);
+    var url = _stateRouteMapping[state].interpolate(params); //eslint-disable-line no-shadow
     if (prependHash) {
       return `#${url}`;
     }
@@ -58,10 +60,8 @@ export class RouteUtils {
   }
 
   static navigate(state, params = {}) {
-    var routeMapping = _stateRouteMapping[state];
-    var url = _stateRouteMapping[state].route; //eslint-disable-line no-shadow
-    url = RouteUtils._urlParamsReplace(url, params);
-    routeMapping.router.navigate(url, {trigger: true});
+    var url = RouteUtils.reverse(state, params, false); //eslint-disable-line no-shadow
+    hasher.setHash(url);
   }
 
   static query() {
@@ -87,45 +87,48 @@ export class RouteUtils {
   }
 }
 
-export class BaseRouter extends BackboneSubRoute {
-  constructor(prefix, options) {
-    super(prefix, options);
-
+export class BaseRouter {
+  constructor(prefix = '') {
+    if (prefix !== '') {
+      prefix = `${prefix}/`;
+    }
     //find subRoutes
-    for (let rt of Object.keys(this.routes)) {
-      let rtObj = this.routes[rt];
+    for (let rt of Object.keys(this.urlPatterns)) {
+      let rtObj = this.urlPatterns[rt];
+      if (rt !== '') {
+        rt = `${rt}/`;
+      }
       if (rtObj instanceof IncludeDefinition) {
         //instantiate sub router
-        new rtObj.router(rt, options); //eslint-disable-line new-cap, no-new
-        delete this.routes[rt];
+        new rtObj.router(`${prefix}${rt}`); //eslint-disable-line new-cap, no-new
       } else {
-        _stateRouteMapping[rtObj.state] = {route: rt, router: this};
+        var rUrl = `${prefix}${rt}`;
+        _stateRouteMapping[rtObj.state] = crossroads.addRoute(rUrl, (...args) => { //eslint-disable-line no-loop-func
+          this.routeTo(rtObj, args);
+        });
       }
     }
+  }
 
-    this.on('route', function (urlDef, args) {
-      var Controller = urlDef.controller;
-      var midPromises = [];
-      for (var mid of runtime.middleware) {
-        if (mid.preControllerInit) {
-          midPromises.push(mid.preControllerInit());
-        }
+  routeTo(urlDef, args) {
+    var Controller = urlDef.controller;
+    var midPromises = [];
+    for (var mid of runtime.middleware) {
+      if (mid.preControllerInit) {
+        midPromises.push(mid.preControllerInit());
       }
-      Promise.all(midPromises).then(() => {
-        global.state = urlDef.state;
-        new Controller().init(...args);
-      }, (error) => {
-        if (error) {
-          console.log(error);
-        }
-      });
+    }
+    Promise.all(midPromises).then(() => {
+      global.state = urlDef.state;
+      new Controller().init(...args);
+    }, (error) => {
+      if (error) {
+        console.log(error);
+      }
     });
   }
 
-  get routes() {
-    if (!this._routes) {
-      this._routes = this.urlPatterns;
-    }
-    return this._routes;
+  get urlPatterns() {
+    throw 'NotImplemented';
   }
 }
