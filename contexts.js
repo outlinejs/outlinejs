@@ -35,7 +35,8 @@ class GlobalContext {
 }
 
 class RuntimeContext {
-  constructor() {
+  constructor(containerNode) {
+    this._containerNode = containerNode;
     this._middleware = [];
     for (var mid of settings.MIDDLEWARE) {
       this._middleware.push(new mid.default()); //eslint-disable-line new-cap
@@ -45,10 +46,14 @@ class RuntimeContext {
   get middleware() {
     return this._middleware;
   }
+
+  get containerNode() {
+    return this._containerNode;
+  }
 }
 
-export function _initContexts(settingsInstance) {
+export function _initContexts(settingsInstance, containerNode) {
   settings = settingsInstance;
   global = new GlobalContext();
-  runtime = new RuntimeContext();
+  runtime = new RuntimeContext(containerNode);
 }

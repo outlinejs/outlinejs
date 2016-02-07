@@ -1,5 +1,4 @@
 import BackboneSubRoute from 'backbone.subroute';
-import { settings } from './contexts';
 import { global, runtime } from './contexts';
 
 let _stateRouteMapping = {};
@@ -89,7 +88,7 @@ export class RouteUtils {
 }
 
 export class BaseRouter extends BackboneSubRoute {
-  constructor(prefix, options, mainElement) {
+  constructor(prefix, options) {
     super(prefix, options);
 
     //find subRoutes
@@ -97,7 +96,7 @@ export class BaseRouter extends BackboneSubRoute {
       let rtObj = this.routes[rt];
       if (rtObj instanceof IncludeDefinition) {
         //instantiate sub router
-        new rtObj.router(rt, options, mainElement); //eslint-disable-line new-cap, no-new
+        new rtObj.router(rt, options); //eslint-disable-line new-cap, no-new
         delete this.routes[rt];
       } else {
         _stateRouteMapping[rtObj.state] = {route: rt, router: this};
@@ -106,10 +105,6 @@ export class BaseRouter extends BackboneSubRoute {
 
     this.on('route', function (urlDef, args) {
       var Controller = urlDef.controller;
-      var routeContext = {
-        currentState: urlDef.state,
-        element: mainElement
-      };
       var midPromises = [];
       for (var mid of runtime.middleware) {
         if (mid.preControllerInit) {
@@ -118,7 +113,7 @@ export class BaseRouter extends BackboneSubRoute {
       }
       Promise.all(midPromises).then(() => {
         global.state = urlDef.state;
-        new Controller(routeContext).init(...args);
+        new Controller().init(...args);
       }, (error) => {
         if (error) {
           console.log(error);
