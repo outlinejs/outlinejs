@@ -69,8 +69,7 @@ Backbone.sync = function (method, model, options) {
             options.success(jData);
             resolve(model);
           } else {
-            //TODO: errors data
-            console.log(res);
+            options.error(jData);
             reject({
               code: res.statusCode,
               errorText: res.statusMessage,
