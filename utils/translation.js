@@ -1,6 +1,6 @@
-import $ from 'jquery';
 import Jed from 'jed';
 import { global } from '../contexts';
+import http from 'http';
 
 let dictionaries = {};
 
@@ -47,15 +47,24 @@ export function activate(language) {
       global.language = language;
       resolve();
     } else {
-      $.ajax(`/locale/${language}.json`, {
-        success: (data) => {
-          dictionaries[language] = new Jed(data);
-          global.language = language;
-        },
-        complete: () => {
+      var req = http.request(`/locale/${language}.json`, (res) => {
+        var responseText = '';
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+          responseText += chunk;
+        });
+        res.on('end', () => {
+          if (res.statusCode >= 200 && res.statusCode < 300 || res.statusCode === 304) {
+            dictionaries[language] = new Jed(JSON.parse(responseText));
+            global.language = language;
+          }
           resolve();
-        }
+        });
       });
+      req.on('error', () => {
+        resolve();
+      });
+      req.end();
     }
   });
 }

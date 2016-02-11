@@ -50,6 +50,14 @@ class RuntimeContext {
   get containerNode() {
     return this._containerNode;
   }
+
+  get isClient() {
+    return typeof window !== 'undefined';
+  }
+
+  get isServer() {
+    return !this.isClient;
+  }
 }
 
 export function _initContexts(settingsInstance, containerNode) {

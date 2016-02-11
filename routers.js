@@ -1,6 +1,5 @@
 import { global, runtime } from './contexts';
 import crossroads from 'crossroads';
-import hasher from 'hasher';
 
 let _stateRouteMapping = {};
 
@@ -41,14 +40,23 @@ export class RouteUtils {
   static listen(routerClass) {
     new routerClass(); //eslint-disable-line no-unused-vars, new-cap, no-new
 
-    function parseHash(newHash) {
+    function parseUrl(newHash) {
       crossroads.parse(newHash);
     }
 
-    hasher.initialized.add(parseHash);
-    hasher.changed.add(parseHash);
-    hasher.prependHash = '';
-    hasher.init();
+    if (runtime.isClient) {
+      var hasher = require('hasher');
+      hasher.initialized.add(parseUrl);
+      hasher.changed.add(parseUrl);
+      hasher.prependHash = '';
+      hasher.init();
+    } else {
+      var http = require('http');
+      var urlModule = require('url');
+      http.createServer((req, res) => {
+        parseUrl(urlModule.parse(req.url).pathname);
+      }).listen(1337, '0.0.0.0');
+    }
   }
 
   static reverse(state, params = {}, prependHash = true) {
@@ -61,7 +69,10 @@ export class RouteUtils {
 
   static navigate(state, params = {}) {
     var url = RouteUtils.reverse(state, params, false); //eslint-disable-line no-shadow
-    hasher.setHash(url);
+    if (runtime.isClient) {
+      var hasher = require('hasher');
+      hasher.setHash(url);
+    }
   }
 
   static query() {
