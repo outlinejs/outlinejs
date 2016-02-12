@@ -35,9 +35,24 @@ class GlobalContext {
 }
 
 class RuntimeContext {
-  constructor(containerNode) {
-    this._containerNode = containerNode;
+  constructor(containerNodeId) {
+    this._containerNodeId = containerNodeId;
+    this._serverRenderContainerPattern = new RegExp(`(id=\"${containerNodeId}\"[^\>]*>?)(.*?)(<\/)`);
     this._middleware = [];
+    if (this.isClient) {
+      this._renderContainerObject = document.getElementById(this.containerNodeId);
+    } else {
+      var fs = require('fs');
+      fs.readFile('./dist/index.html', (err, html) => {
+        if (err) {
+          throw err;
+        }
+        //make urls absolute
+        html = `${html}`;
+        html = html.replace(/"((?:[^"]*?)\.(?:js|css))"/g, '"/$1"')
+        this._renderContainerObject = html;
+      });
+    }
     for (var mid of settings.MIDDLEWARE) {
       this._middleware.push(new mid.default()); //eslint-disable-line new-cap
     }
@@ -47,8 +62,16 @@ class RuntimeContext {
     return this._middleware;
   }
 
-  get containerNode() {
-    return this._containerNode;
+  get containerNodeId() {
+    return this._containerNodeId;
+  }
+
+  get serverRenderContainerPattern() {
+    return this._serverRenderContainerPattern;
+  }
+
+  get renderContainerObject() {
+    return this._renderContainerObject;
   }
 
   get isClient() {
@@ -60,8 +83,8 @@ class RuntimeContext {
   }
 }
 
-export function _initContexts(settingsInstance, containerNode) {
+export function _initContexts(settingsInstance, containerNodeId) {
   settings = settingsInstance;
   global = new GlobalContext();
-  runtime = new RuntimeContext(containerNode);
+  runtime = new RuntimeContext(containerNodeId);
 }

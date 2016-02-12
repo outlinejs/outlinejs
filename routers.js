@@ -40,8 +40,8 @@ export class RouteUtils {
   static listen(routerClass) {
     new routerClass(); //eslint-disable-line no-unused-vars, new-cap, no-new
 
-    function parseUrl(newHash) {
-      crossroads.parse(newHash);
+    function parseUrl(newHash, req, res) {
+      crossroads.parse(newHash, [req, res]);
     }
 
     if (runtime.isClient) {
@@ -53,18 +53,22 @@ export class RouteUtils {
     } else {
       var http = require('http');
       var urlModule = require('url');
+      crossroads.ignoreState = true;
       http.createServer((req, res) => {
-        parseUrl(urlModule.parse(req.url).pathname);
+        parseUrl(urlModule.parse(req.url).pathname, req, res);
       }).listen(1337, '0.0.0.0');
     }
   }
 
   static reverse(state, params = {}, prependHash = true) {
     var url = _stateRouteMapping[state].interpolate(params); //eslint-disable-line no-shadow
-    if (prependHash) {
+    if (prependHash && runtime.isClient) {
       return `#${url}`;
     }
-    return url;
+    if (runtime.isServer) {
+      return `/${url}`;
+    }
+    return `${url}`;
   }
 
   static navigate(state, params = {}) {
@@ -124,6 +128,8 @@ export class BaseRouter {
   routeTo(urlDef, args) {
     var Controller = urlDef.controller;
     var midPromises = [];
+    var req = args.shift();
+    var res = args.shift();
     for (var mid of runtime.middleware) {
       if (mid.preControllerInit) {
         midPromises.push(mid.preControllerInit());
@@ -131,7 +137,7 @@ export class BaseRouter {
     }
     Promise.all(midPromises).then(() => {
       global.state = urlDef.state;
-      new Controller().init(...args);
+      new Controller(req, res).init(...args);
     }, (error) => {
       if (error) {
         console.log(error);

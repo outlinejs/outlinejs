@@ -1,11 +1,14 @@
 import ReactDOM from 'react-dom';
+import ReactDOMServer from 'react-dom/server';
 import React from 'react'; //eslint-disable-line no-unused-vars
 import { runtime } from './contexts';
 
 export class BaseController {
-  constructor(view = null) {
-    this._view = view;
+  constructor(req, res) {
+    this._view = null;
     this._viewInstance = null;
+    this.res = res;
+    this.req = req;
   }
 
   set view(value) {
@@ -26,7 +29,15 @@ export class BaseController {
 
   render(context = {}) {
     var View = this._view; //eslint-disable-line no-unused-vars
-    this._viewInstance = ReactDOM.render(<View {...context} delegate={this} />, runtime.containerNode);
+    if (runtime.isClient) {
+      this._viewInstance = ReactDOM.render(<View {...context} delegate={this} />, runtime.renderContainerObject);
+    } else {
+      var html = runtime.renderContainerObject.replace(runtime.serverRenderContainerPattern, (match, pre, inside, post) => {
+        return pre + ReactDOMServer.renderToString(<View {...context} delegate={this} />) + post;
+      });
+      this.res.writeHead(200, {'Content-Type': 'text/html'});
+      this.res.end(html);
+    }
   }
 }
 
@@ -34,9 +45,9 @@ export class BaseLayoutController extends BaseController {
   // in base layout view
   // layout view correspond to BaseController view
   // and view correspond to the view to set in content property
-  constructor(view = null, layoutView = null) {
-    super(layoutView);
-    this._contentView = view;
+  constructor(req, res) {
+    super(req, res);
+    this._contentView = null;
   }
 
   set layoutView(value) {
