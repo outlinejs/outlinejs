@@ -1,5 +1,6 @@
 import { global, runtime } from './contexts';
 import crossroads from 'crossroads';
+import React from 'react';
 
 let _stateRouteMapping = {};
 
@@ -39,47 +40,52 @@ export function include(router) {
 export class RouteUtils {
   static listen(routerClass) {
     new routerClass(); //eslint-disable-line no-unused-vars, new-cap, no-new
-
-    function parseUrl(newHash, req, res) {
-      crossroads.parse(newHash, [req, res]);
-    }
-
     if (runtime.isClient) {
-      var hasher = require('hasher');
-      hasher.initialized.add(parseUrl);
-      hasher.changed.add(parseUrl);
-      hasher.prependHash = '';
-      hasher.init();
+      RouteUtils._listenClient();
     } else {
-      var http = require('http');
-      var urlModule = require('url');
-      crossroads.ignoreState = true;
-      http.createServer((req, res) => {
-        parseUrl(urlModule.parse(req.url).pathname, req, res);
-      }).listen(1337, '0.0.0.0');
+      RouteUtils._listenServer();
     }
   }
 
-  static reverse(state, params = {}, prependHash = true) {
+  static _listenServer() {
+    var http = require('http');
+    var urlModule = require('url');
+    crossroads.ignoreState = true;
+    http.createServer((req, res) => {
+      RouteUtils.parseUrl(urlModule.parse(req.url).pathname, req, res);
+    }).listen(1337, '0.0.0.0');
+  }
+
+  static _listenClient() {
+    require('html5-history-api');
+    var location = window.history.location || window.location;
+    var eventDef = window.addEventListener ? ['addEventListener', ''] : ['attachEvent', 'on'];
+    window[eventDef[0]](`${eventDef[1]}popstate`, () => {
+      RouteUtils.parseUrl(location.pathname);
+    }, false);
+    RouteUtils.parseUrl(location.pathname);
+  }
+
+  static parseUrl(path, req, res) {
+    crossroads.parse(path, [req, res]);
+  }
+
+  static reverse(state, params = {}) {
     var url = _stateRouteMapping[state].interpolate(params); //eslint-disable-line no-shadow
-    if (prependHash && runtime.isClient) {
-      return `#${url}`;
-    }
-    if (runtime.isServer) {
-      return `/${url}`;
-    }
-    return `${url}`;
+    return `/${url}`;
   }
 
   static navigate(state, params = {}) {
-    var url = RouteUtils.reverse(state, params, false); //eslint-disable-line no-shadow
+    var url = RouteUtils.reverse(state, params); //eslint-disable-line no-shadow
     if (runtime.isClient) {
-      var hasher = require('hasher');
-      hasher.setHash(url);
+      var history = require('html5-history-api');
+      history.pushState(null, null, url);
+      RouteUtils.parseUrl(url);
     }
   }
 
   static query() {
+    //TODO: server side
     var href = window.location.href;
     var result = {};
     if (href.includes('#')) {
@@ -119,17 +125,15 @@ export class BaseRouter {
       } else {
         var rUrl = `${prefix}${rt}`;
         _stateRouteMapping[rtObj.state] = crossroads.addRoute(rUrl, (...args) => { //eslint-disable-line no-loop-func
-          this.routeTo(rtObj, args);
+          this.routeTo(rtObj, ...args);
         });
       }
     }
   }
 
-  routeTo(urlDef, args) {
+  routeTo(urlDef, req, res, ...args) {
     var Controller = urlDef.controller;
     var midPromises = [];
-    var req = args.shift();
-    var res = args.shift();
     for (var mid of runtime.middleware) {
       if (mid.preControllerInit) {
         midPromises.push(mid.preControllerInit());
@@ -147,5 +151,58 @@ export class BaseRouter {
 
   get urlPatterns() {
     throw 'NotImplemented';
+  }
+}
+
+export class Link extends React.Component {
+  static isLeftClickEvent(event) {
+    return event.button === 0;
+  }
+
+  static isModifiedEvent(event) {
+    return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+  }
+
+  handleClick(event) {
+    let allowTransition = true;
+
+    if (this.props.onClick) {
+      this.props.onClick(event);
+    }
+
+    if (Link.isModifiedEvent(event) || !Link.isLeftClickEvent(event)) {
+      return;
+    }
+
+    if (event.defaultPrevented === true) {
+      allowTransition = false;
+    }
+
+    // If target prop is set (e.g. to "_blank") let browser handle link.
+    if (this.props.target) {
+      if (!allowTransition) {
+        event.preventDefault();
+      }
+      return;
+    }
+
+    event.preventDefault();
+
+    if (allowTransition) {
+      const { state, params } = this.props;
+      RouteUtils.navigate(state, params);
+    }
+  }
+
+  render() {
+    var props = {};
+    props.href = RouteUtils.reverse(this.props.state, this.props.params);
+    if (this.props.activeClassName) {
+      if (RouteUtils.isState(this.props.state)) {
+        props.className = this.props.className === '' ? this.props.activeClassName : `${this.props.className} ${this.props.activeClassName}`;
+      }
+    }
+    props.children = this.props.children;
+    return <a {...props} onClick={this.handleClick.bind(this)} />;
   }
 }
