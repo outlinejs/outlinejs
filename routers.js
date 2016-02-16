@@ -141,7 +141,11 @@ export class BaseRouter {
     }
     Promise.all(midPromises).then(() => {
       global.state = urlDef.state;
-      new Controller(req, res).init(...args);
+      let controller = new Controller(req, res);
+      if (runtime.isClient) {
+        controller.reconcileWithServer();
+      }
+      controller.init(...args);
     }, (error) => {
       if (error) {
         console.log(error);

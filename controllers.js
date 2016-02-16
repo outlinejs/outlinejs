@@ -12,36 +12,41 @@ function safeStringify(obj) {
 
 export class BaseController {
   constructor(req, res) {
-    this._view = null;
     this._viewInstance = null;
     this.res = res;
     this.req = req;
   }
 
-  set view(value) {
-    this._view = value;
-  }
-
   get view() {
-    return this._view;
+    throw 'NotImplemented. The \'view\' property is not implemented!';
   }
 
   get viewInstance() {
     return this._viewInstance;
   }
 
+  get isViewRendered() {
+    return this.viewInstance !== null;
+  }
+
   static get loginRequired() {
     return true;
   }
 
+  getViewForRendering() {
+    return this.view;
+  }
+
+  reconcileWithServer() {
+    if (runtime.isClient && window.VIEW_PROPS) {
+      this.render(window.VIEW_PROPS);
+      window.VIEW_PROPS = null;
+    }
+  }
+
   render(context = {}) {
-    var View = this._view; //eslint-disable-line no-unused-vars
+    var View = this.getViewForRendering(); //eslint-disable-line
     if (runtime.isClient) {
-      if (window.VIEW_PROPS) {
-        //re-sync server rendered props
-        ReactDOM.render(<View {...window.VIEW_PROPS} delegate={this} />, runtime.renderContainerObject);
-        window.VIEW_PROPS = null;
-      }
       this._viewInstance = ReactDOM.render(<View {...context} delegate={this} />, runtime.renderContainerObject);
     } else {
       //render react component
@@ -66,35 +71,29 @@ export class BaseLayoutController extends BaseController {
   // and view correspond to the view to set in content property
   constructor(req, res) {
     super(req, res);
-    this._contentView = null;
   }
 
-  set layoutView(value) {
-    this._view = value;
-  }
   get layoutView() {
-    return this._view;
+    throw 'NotImplemented. The \'layoutView\' property is not implemented!';
   }
 
-  set view(value) {
-    this._contentView = value;
-  }
-  get view() {
-    return this._contentView;
+  getViewForRendering() {
+    return this.layoutView;
   }
 
-  get viewInstance() {
-    return super.viewInstance.refs.contentView;
+  reconcileWithServer() {
+    if (runtime.isClient && window.VIEW_PROPS) {
+      //re-sync server rendered props (content is not a serializable prop ... so is not available in serialized VIEW_PROPS)
+      window.VIEW_PROPS.content = this.view;
+      super.render(window.VIEW_PROPS);
+      window.VIEW_PROPS = null;
+    }
   }
 
   render(context = {}) {
     var mergedContext = {};
     mergedContext.contentProps = context;
-    mergedContext.content = this._contentView;
-    if (runtime.isClient && window.VIEW_PROPS) {
-      //re-sync server rendered props (content is not a serializable prop ... so is not available in serialized VIEW_PROPS)
-      window.VIEW_PROPS.content = this._contentView;
-    }
+    mergedContext.content = this.view;
     super.render(mergedContext);
   }
 }
