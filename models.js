@@ -10,6 +10,17 @@ export class BaseModel extends Backbone.Model {
     return baseUrl;
   }
 
+  toJSON() {
+    var serialized = {};
+    var proto = Reflect.getPrototypeOf(this);
+    for (let name of Reflect.ownKeys(proto)) {
+      if (Reflect.getOwnPropertyDescriptor(proto, name).get) {
+        serialized[name] = this[name];
+      }
+    }
+    return serialized;
+  }
+
   updateFromProps(props) {
     var proto = Reflect.getPrototypeOf(this);
     var hasProps = false;
