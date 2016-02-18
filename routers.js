@@ -51,8 +51,13 @@ export class RouteUtils {
     var http = require('http');
     var urlModule = require('url');
     crossroads.ignoreState = true;
+    crossroads.bypassed.add((req, res) => {
+      res.writeHead(404, {'Content-Type': 'text/html'});
+      res.end('<html><body><h1>HTTP 404 - Page Not Found</h1><hr/><p>OutlineJS Server</p></body></html>');
+    });
     http.createServer((req, res) => {
-      RouteUtils.parseUrl(urlModule.parse(req.url).pathname, req, res);
+      var requestedUrl = urlModule.parse(req.url).pathname;
+      RouteUtils.parseUrl(requestedUrl, req, res);
     }).listen(1337, '0.0.0.0');
   }
 
