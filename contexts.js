@@ -1,3 +1,4 @@
+import env from './utils/env';
 export let global = null;
 export let runtime = null;
 export let settings = null;
@@ -44,7 +45,7 @@ class RuntimeContext {
     } else {
       // the project bundler *MUST* include a __main.html module with the base html source
       var html = require('__main.html');
-      html = html.replace(/"((?:[^"]*?)\.(?:js|css))"/g, '"/$1"')
+      html = html.replace(/"((?:[^"]*?)\.(?:js|css))"/g, '"/$1"');
       this._renderContainerObject = html;
     }
     for (var mid of settings.MIDDLEWARE) {
