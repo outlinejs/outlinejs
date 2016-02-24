@@ -78,8 +78,8 @@ class RuntimeContext {
   }
 }
 
-export function _initContexts(settingsInstance, containerNodeId) {
-  settings = settingsInstance;
+export function _initContexts(settingsClass, containerNodeId) {
+  settings = new settingsClass(); //eslint-disable-line new-cap
   global = new GlobalContext();
   runtime = new RuntimeContext(containerNodeId);
 }

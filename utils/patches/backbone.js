@@ -2,6 +2,7 @@ import Backbone from 'backbone';
 import querystring from 'querystring';
 import url from 'url';
 import http from 'http';
+import https from 'https';
 
 let httpMethodMap = {
   create: 'POST',
@@ -17,6 +18,7 @@ Backbone.sync = function (method, model, options) {
       var reqUrl = options.url;
       var bodyData;
       var qs;
+      var protocol = http;
       var params = {
         method: httpMethodMap[method],
         headers: {
@@ -47,6 +49,9 @@ Backbone.sync = function (method, model, options) {
 
       reqUrl = url.parse(reqUrl);
       params.protocol = reqUrl.protocol;
+      if (params.protocol === 'https:') {
+        protocol = https;
+      }
       params.hostname = reqUrl.hostname;
       params.port = reqUrl.port;
       params.path = reqUrl.path;
@@ -54,7 +59,7 @@ Backbone.sync = function (method, model, options) {
         params.path = reqUrl.query ? `${params.path}&${qs}` : `${params.path}?${qs}`;
       }
 
-      var req = http.request(params, (res) => {
+      var req = protocol.request(params, (res) => {
         var responseText = '';
         res.setEncoding('utf8');
         res.on('data', function (chunk) {

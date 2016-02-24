@@ -4,8 +4,8 @@ import './utils/patches/backbone';
 import { RouteUtils } from './routers';
 
 export default class {
-  static init(routerClass, containerNodeId, settings) {
-    _initContexts(settings, containerNodeId);
+  static init(settingsClass, routerClass, containerNodeId) {
+    _initContexts(settingsClass, containerNodeId);
     RouteUtils.listen(routerClass);
   }
 }
