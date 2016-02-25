@@ -1,11 +1,11 @@
 {
   "name": "outlinejs",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Javascript App Outline",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "faxioman <fabio@rapidosoft.it> (https://github.com/faxioman)",
   "license": "ISC",
   "repository": {
     "type": "git",
