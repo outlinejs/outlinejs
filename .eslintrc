@@ -10,6 +10,9 @@
     "modules": true,
     "jsx": true
   },
+  "plugins": [
+    "react"
+  ],
   "rules": {
     "array-bracket-spacing": [
       2,
@@ -142,6 +145,7 @@
         "after": true
       }
     ],
-    "space-return-throw-case": 2
+    "space-return-throw-case": 2,
+    "react/jsx-uses-react": 2
   }
 }

@@ -8,11 +8,11 @@ import './utils/patches/backbone';
 import { RouteUtils } from './routers';
 
 /**
- * Class for bootstrapping an outlineJS project.
+ * Class for bootstrapping an outlineJs project.
  */
 export default class {
   /**
-   * Bootstrap the outlineJS isomorphic application.
+   * Bootstrap the outlineJs isomorphic application.
    * @param {BaseSettings} settingsClass - The project settings class
    * @param {BaseRouter} routerClass - The main router class defined in main urls.js module
    * @param {string} containerNodeId - The node id where to render the view layer
