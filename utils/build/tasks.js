@@ -86,7 +86,7 @@ export default class {
     b = b.require('./.tmp/env.json', {expose: '__outline_env'})
       .exclude('__outline_env');
     //include language catalogs
-    var catalogs = glob.sync('./.tmp/locale/*.json');
+    var catalogs = glob.sync('.tmp/locale/*.json', {realpath: true});
     for (const catalog of catalogs) {
       var content = require(catalog);
       b = b.require(catalog, {expose: `__locale_${content.locale_data.messages[''].lang}`});
