@@ -72,7 +72,7 @@ export default class {
     b.on('log', $.util.log);
     if (forNode) {
       b = b
-        .require('./.tmp/main.html', {expose: '__main.html'})
+        .require('./.tmp/main.html', {expose: '__main_html'})
         .exclude('http')
         .exclude('https')
         .exclude('url')
@@ -81,10 +81,17 @@ export default class {
         .exclude('buffer')
         .exclude('console-browserify');
     }
-    b = b.exclude('__main.html');
+    b = b.exclude('__main_html');
     //include env
-    b = b.require('./.tmp/env.json', {expose: '__outlineEnv'})
-      .exclude('__outlineEnv');
+    b = b.require('./.tmp/env.json', {expose: '__outline_env'})
+      .exclude('__outline_env');
+    //include language catalogs
+    var catalogs = glob.sync('./.tmp/locale/*.json');
+    for (const catalog of catalogs) {
+      var content = require(catalog);
+      b = b.require(catalog, {expose: `__locale_${content.locale_data.messages[''].lang}`});
+    }
+    //watchify support
     if (watch) {
       b = watchify(b);
     }

@@ -43,8 +43,7 @@ class RuntimeContext {
     if (this.isClient) {
       this._renderContainerObject = document.getElementById(this.containerNodeId);
     } else {
-      // the project bundler *MUST* include a __main.html module with the base html source
-      var html = require('__main.html');
+      var html = require('__main_html');
       html = html.replace(/"((?:[^"]*?)\.(?:js|css))"/g, '"/$1"');
       this._renderContainerObject = html;
     }

@@ -41,30 +41,12 @@ export function npgettext(context, singular, plural, count) {
 }
 
 export function activate(language) {
-  //TODO: be tolerant with language value
-  return new Promise((resolve) => {
-    if (dictionaries[language]) {
-      global.language = language;
-      resolve();
-    } else {
-      var req = http.request(`/locale/${language}.json`, (res) => {
-        var responseText = '';
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-          responseText += chunk;
-        });
-        res.on('end', () => {
-          if (res.statusCode >= 200 && res.statusCode < 300 || res.statusCode === 304) {
-            dictionaries[language] = new Jed(JSON.parse(responseText));
-            global.language = language;
-          }
-          resolve();
-        });
-      });
-      req.on('error', () => {
-        resolve();
-      });
-      req.end();
+  if (!dictionaries[language]) {
+    try {
+      dictionaries[language] = new Jed(require(`__locale_${language}`));
+    } catch (ex) {
+      console.warn(`Language with code ${language} is not available`);
     }
-  });
+  }
+  global.language = language;
 }

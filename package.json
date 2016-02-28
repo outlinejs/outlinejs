@@ -1,6 +1,6 @@
 {
   "name": "outlinejs",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "description": "Javascript App Outline",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,14 +12,27 @@
     "url": "https://github.com/faxioman/outlinejs.git"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "eslint": "^1.10.3",
+    "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.3.14",
+    "backbone": "^1.2.3",
+    "base-64": "^0.1.0",
+    "crossroads": "^0.12.2",
+    "html5-history-api": "^4.2.5",
+    "jed": "^1.1.0",
+    "jquery": "^2.1.4",
+    "react": "^0.14.5",
+    "react-dom": "^0.14.5",
     "autoprefixer": "^6.3.3",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
     "babelify": "^7.2.0",
     "browser-sync": "^2.11.1",
     "del": "^2.2.0",
-    "eslint": "^1.10.3",
-    "eslint-plugin-react": "^4.1.0",
     "gulp-cache": "^0.4.2",
     "gulp-concat": "^2.6.0",
     "gulp-cssnano": "^2.1.1",
@@ -40,7 +53,6 @@
     "gulp-useref": "^3.0.7",
     "gulp-util": "^3.0.7",
     "http-proxy": "^1.13.2",
-    "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git",
     "main-bower-files": "^2.11.1",
     "merge2": "^1.0.1",
     "mocaccino": "^1.8.2",
@@ -51,17 +63,6 @@
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0",
     "wiredep": "^3.0.0"
-  },
-  "dependencies": {
-    "babel-polyfill": "^6.3.14",
-    "backbone": "^1.2.3",
-    "base-64": "^0.1.0",
-    "crossroads": "^0.12.2",
-    "html5-history-api": "^4.2.5",
-    "jed": "^1.1.0",
-    "jquery": "^2.1.4",
-    "react": "^0.14.5",
-    "react-dom": "^0.14.5"
   },
   "browserify": {
     "transform": [
