@@ -5,4 +5,7 @@ export class BaseSettings {
   get LOGIN_STATE() {
     return 'login';
   }
+  get APPEND_SLASH() {
+    return true;
+  }
 }
