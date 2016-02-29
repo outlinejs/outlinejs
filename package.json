@@ -1,6 +1,6 @@
 {
   "name": "outlinejs",
-  "version": "1.3.9",
+  "version": "1.3.10",
   "description": "Javascript App Outline",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,6 +16,7 @@
   "files": [
     "dist"
   ],
+  "main": "./dist/boot.js",
   "devDependencies": {
     "babel-cli": "^6.5.1",
     "babel-preset-es2015": "^6.3.13",
