@@ -1,10 +1,10 @@
 {
   "name": "outlinejs",
-  "version": "1.3.10",
+  "version": "1.3.13",
   "description": "Javascript App Outline",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "cd src;babel ** --out-dir ../dist/",
+    "compile": "cd src;babel ** --out-dir ../lib",
     "prepublish": "npm run compile"
   },
   "author": "faxioman <fabio@rapidosoft.it> (https://github.com/faxioman)",
@@ -14,9 +14,8 @@
     "url": "https://github.com/faxioman/outlinejs.git"
   },
   "files": [
-    "dist"
+    "lib"
   ],
-  "main": "./dist/boot.js",
   "devDependencies": {
     "babel-cli": "^6.5.1",
     "babel-preset-es2015": "^6.3.13",
