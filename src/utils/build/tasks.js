@@ -61,11 +61,12 @@ export default class {
    * @param {boolean} debug - Compile with debug support
    * @param {boolean} forNode - Compile for node js (server-side)
    * @param {boolean} watch - Use watchify
+   * @param {Array.<string>} files - Browserify entries
    */
-  getBrowserify(debug = false, forNode = false, watch = false) {
+  getBrowserify(debug = false, forNode = false, watch = false, files = [this.projectJsEntry]) {
     var b = this.browserify(
       Object.assign({}, watch ? watchify.args : {}, {
-        entries: [this.projectJsEntry],
+        entries: files,
         debug: debug
       })
     );
@@ -312,7 +313,7 @@ export default class {
 
     this.gulp.task('ojs:test', ['ojs:lint-test'], () => {
       var files = glob.sync('project/**/tests/*.js');
-      var b = this.browserify({entries: files})
+      var b = this.getBrowserify(false, false, false, files)
         .plugin(mocaccino, {reporter: 'spec'})
         .bundle();
 
