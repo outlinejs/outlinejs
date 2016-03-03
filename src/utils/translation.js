@@ -1,6 +1,5 @@
 import Jed from 'jed';
-import { global } from '../contexts';
-import http from 'http';
+//import { global } from '../contexts';
 
 let dictionaries = {};
 
@@ -40,7 +39,8 @@ export function npgettext(context, singular, plural, count) {
   return count === 1 ? singular : plural;
 }
 
-export function activate(language) {
+//TODO: won't work
+export function activate(language, globalContext) {
   if (!dictionaries[language]) {
     try {
       dictionaries[language] = new Jed(require(`__locale_${language}`));
@@ -48,5 +48,5 @@ export function activate(language) {
       console.warn(`Language with code ${language} is not available`);
     }
   }
-  global.language = language;
+  globalContext.language = language;
 }

@@ -1,9 +1,7 @@
-import env from './utils/env';
-export let global = null;
 export let runtime = null;
 export let settings = null;
 
-class GlobalContext {
+export class GlobalContext {
   constructor() {
     this._user = null;
     this._state = null;
@@ -32,6 +30,10 @@ class GlobalContext {
 
   set language(value) {
     this._language = value;
+  }
+
+  isState(state) {
+    return this.state.indexOf(state) === 0;
   }
 }
 
@@ -79,6 +81,5 @@ class RuntimeContext {
 
 export function _initContexts(settingsClass, containerNodeId) {
   settings = new settingsClass(); //eslint-disable-line new-cap
-  global = new GlobalContext();
   runtime = new RuntimeContext(containerNodeId);
 }

@@ -1,4 +1,4 @@
-import { global, runtime } from './contexts';
+import { GlobalContext, runtime } from './contexts';
 import crossroads from 'crossroads';
 import React from 'react';
 
@@ -71,7 +71,26 @@ export class RouteUtils {
     RouteUtils.parseUrl(location.pathname);
   }
 
-  static parseUrl(path, req, res) {
+  static parseUrl(path, req = {}, res) {
+    // add global context props to request
+    var globalContext = new GlobalContext();
+    var globalContextProto = Reflect.getPrototypeOf(globalContext);
+    for (let key of Reflect.ownKeys(globalContextProto)) {
+      let descriptor = Reflect.getOwnPropertyDescriptor(globalContextProto, key);
+      //props
+      if (descriptor.get || descriptor.set) {
+        Object.defineProperty(req, key, { get: () => { //eslint-disable-line no-loop-func
+          return globalContext[key];
+        }, set: (value) => { //eslint-disable-line no-loop-func
+          globalContext[key] = value;
+        }});
+      }
+      //methods
+      if (descriptor.value) {
+        req[key] = globalContext[key];
+      }
+    }
+    //crossroad url parsing
     crossroads.parse(path, [req, res]);
   }
 
@@ -107,6 +126,7 @@ export class RouteUtils {
   }
 
   static isState(state, className = 'active') {
+    //TODO: won't work!!
     if (global.state.indexOf(state) === 0) {
       return className;
     }
@@ -141,11 +161,11 @@ export class BaseRouter {
     var midPromises = [];
     for (var mid of runtime.middleware) {
       if (mid.preControllerInit) {
-        midPromises.push(mid.preControllerInit());
+        midPromises.push(mid.preControllerInit(req, res));
       }
     }
     Promise.all(midPromises).then(() => {
-      global.state = urlDef.state;
+      req.state = urlDef.state;
       let controller = new Controller(req, res);
       if (runtime.isClient) {
         controller.reconcileWithServer();
@@ -207,6 +227,7 @@ export class Link extends React.Component {
     var props = {};
     props.href = RouteUtils.reverse(this.props.state, this.props.params);
     if (this.props.activeClassName) {
+      //TODO: won't work!
       if (RouteUtils.isState(this.props.state)) {
         props.className = this.props.className === '' ? this.props.activeClassName : `${this.props.className} ${this.props.activeClassName}`;
       }

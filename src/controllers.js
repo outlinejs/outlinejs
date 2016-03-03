@@ -11,10 +11,10 @@ function safeStringify(obj) {
 }
 
 export class BaseController {
-  constructor(req, res) {
+  constructor(request, response) {
     this._viewInstance = null;
-    this.res = res;
-    this.req = req;
+    this.request = request;
+    this.response = response;
   }
 
   get view() {
@@ -59,8 +59,8 @@ export class BaseController {
       }}));
       html = html.replace('<head>', `<head>${propScript}`);
       //output to http response
-      this.res.writeHead(200, {'Content-Type': 'text/html'});
-      this.res.end(html);
+      this.response.writeHead(200, {'Content-Type': 'text/html'});
+      this.response.end(html);
     }
   }
 }
@@ -69,9 +69,6 @@ export class BaseLayoutController extends BaseController {
   // in base layout view
   // layout view correspond to BaseController view
   // and view correspond to the view to set in content property
-  constructor(req, res) {
-    super(req, res);
-  }
 
   get layoutView() {
     throw 'NotImplemented. The \'layoutView\' property is not implemented!';
