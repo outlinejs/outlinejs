@@ -71,7 +71,7 @@ export class RouteUtils {
     RouteUtils.parseUrl(location.pathname);
   }
 
-  static parseUrl(path, req = {}, res) {
+  static parseUrl(path, req = {}, res = {}) {
     // add global context props to request
     var globalContext = new GlobalContext();
     var globalContextProto = Reflect.getPrototypeOf(globalContext);
