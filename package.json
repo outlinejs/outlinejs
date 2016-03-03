@@ -31,7 +31,6 @@
     "crossroads": "^0.12.2",
     "html5-history-api": "^4.2.5",
     "jed": "^1.1.0",
-    "jquery": "^2.1.4",
     "react": "^0.14.5",
     "react-dom": "^0.14.5",
     "autoprefixer": "^6.3.3",
