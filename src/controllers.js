@@ -46,21 +46,30 @@ export class BaseController {
 
   render(context = {}) {
     var View = this.getViewForRendering(); //eslint-disable-line
+    // it's the root view, remove the child context request
     if (runtime.isClient) {
-      this._viewInstance = ReactDOM.render(<View {...context} delegate={this} />, runtime.renderContainerObject);
+      this._viewInstance = ReactDOM.render(<View {...context} delegate={this} __request={this.request} />, runtime.renderContainerObject);
     } else {
-      //render react component
-      var html = runtime.renderContainerObject.replace(runtime.serverRenderContainerPattern, (match, pre, inside, post) => {
-        return pre + ReactDOMServer.renderToString(<View {...context} delegate={this} />) + post;
-      });
-      //render react component props
-      var propScript = ReactDOMServer.renderToStaticMarkup(React.DOM.script({dangerouslySetInnerHTML: {__html:
-        `var VIEW_PROPS = ${safeStringify(context)};`
-      }}));
-      html = html.replace('<head>', `<head>${propScript}`);
-      //output to http response
-      this.response.writeHead(200, {'Content-Type': 'text/html'});
-      this.response.end(html);
+      try {
+        //render react component
+        var html = runtime.renderContainerObject.replace(runtime.serverRenderContainerPattern, (match, pre, inside, post) => {
+          return pre + ReactDOMServer.renderToString(<View {...context} delegate={this}
+                                                                        __request={this.request}/>) + post;
+        });
+        //render react component props
+        var propScript = ReactDOMServer.renderToStaticMarkup(React.DOM.script({
+          dangerouslySetInnerHTML: {
+            __html: `var VIEW_PROPS = ${safeStringify(context)};`
+          }
+        }));
+        html = html.replace('<head>', `<head>${propScript}`);
+        //output to http response
+        this.response.writeHead(200, {'Content-Type': 'text/html'});
+        this.response.end(html);
+      } catch (ex) {
+        this.response.writeHead(500, {'Content-Type': 'text/html'});
+        this.response.end(ex);
+      }
     }
   }
 }

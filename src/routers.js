@@ -1,6 +1,7 @@
-import { GlobalContext, runtime } from './contexts';
+import { RequestContext, runtime } from './contexts';
 import crossroads from 'crossroads';
 import React from 'react';
+import { BaseComponent } from './components';
 
 let _stateRouteMapping = {};
 
@@ -72,22 +73,22 @@ export class RouteUtils {
   }
 
   static parseUrl(path, req = {}, res = {}) {
-    // add global context props to request
-    var globalContext = new GlobalContext();
-    var globalContextProto = Reflect.getPrototypeOf(globalContext);
-    for (let key of Reflect.ownKeys(globalContextProto)) {
-      let descriptor = Reflect.getOwnPropertyDescriptor(globalContextProto, key);
+    // add request context props to request
+    var requestContext = new RequestContext();
+    var requestContextProto = Reflect.getPrototypeOf(requestContext);
+    for (let key of Reflect.ownKeys(requestContextProto)) {
+      let descriptor = Reflect.getOwnPropertyDescriptor(requestContextProto, key);
       //props
       if (descriptor.get || descriptor.set) {
         Object.defineProperty(req, key, { get: () => { //eslint-disable-line no-loop-func
-          return globalContext[key];
+          return requestContext[key];
         }, set: (value) => { //eslint-disable-line no-loop-func
-          globalContext[key] = value;
+          requestContext[key] = value;
         }});
       }
       //methods
       if (descriptor.value) {
-        req[key] = globalContext[key];
+        req[key] = requestContext[key];
       }
     }
     //crossroad url parsing
@@ -125,10 +126,9 @@ export class RouteUtils {
     return result;
   }
 
-  static isState(state, className = 'active') {
-    //TODO: won't work!!
-    if (global.state.indexOf(state) === 0) {
-      return className;
+  static activeCssClass(request, state, cssClass = 'active') {
+    if (request && request.isState(state)) {
+      return cssClass;
     }
   }
 }
@@ -183,7 +183,7 @@ export class BaseRouter {
   }
 }
 
-export class Link extends React.Component {
+export class Link extends BaseComponent {
   static isLeftClickEvent(event) {
     return event.button === 0;
   }
@@ -227,8 +227,7 @@ export class Link extends React.Component {
     var props = {};
     props.href = RouteUtils.reverse(this.props.state, this.props.params);
     if (this.props.activeClassName) {
-      //TODO: won't work!
-      if (RouteUtils.isState(this.props.state)) {
+      if (this.request && this.request.isState(this.props.state)) {
         props.className = this.props.className === '' ? this.props.activeClassName : `${this.props.className} ${this.props.activeClassName}`;
       }
     }

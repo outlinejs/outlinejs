@@ -1,7 +1,7 @@
 export let runtime = null;
 export let settings = null;
 
-export class GlobalContext {
+export class RequestContext {
   constructor() {
     this._user = null;
     this._state = null;

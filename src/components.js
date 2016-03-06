@@ -9,6 +9,16 @@ export class BaseComponent extends React.Component {
     this._delegate = null;
   }
 
+  static get contextTypes() {
+    return {
+      request: React.PropTypes.object
+    };
+  }
+
+  get request() {
+    return this.props.__request || this.context.request;
+  }
+
   linkState(key) {
     return new ReactLink(
       this.state[key], ReactStateSetters.createStateKeySetter(this, key)
