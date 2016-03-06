@@ -111,11 +111,11 @@ export default class {
     var bundle = b.bundle()
       .on('error', $.util.log.bind($.util, 'Browserify Error'))
       .pipe(vinylSource(this.getMainFile()))
-      .pipe(vinylBuffer());
+      .pipe(vinylBuffer())
+      .pipe($.sourcemaps.init({loadMaps: true}))
+      .pipe($.sourcemaps.write('./')); // writes .map file
     if (clientMode) {
       bundle = bundle
-        .pipe($.sourcemaps.init({loadMaps: true}))
-        .pipe($.sourcemaps.write('./')) // writes .map file
         .pipe(this.gulp.dest('./.tmp/scripts'))
         .on('end', function () {
           reload();

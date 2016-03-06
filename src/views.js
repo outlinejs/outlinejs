@@ -9,6 +9,8 @@ export class BaseView extends BaseComponent {
   }
 
   getChildContext() {
-    return { request: this.props.__request };
+    return {
+      request: this.props.__request
+    };
   }
 }

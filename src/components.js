@@ -19,6 +19,10 @@ export class BaseComponent extends React.Component {
     return this.props.__request || this.context.request;
   }
 
+  get i18n() {
+    return this.request.i18n;
+  }
+
   linkState(key) {
     return new ReactLink(
       this.state[key], ReactStateSetters.createStateKeySetter(this, key)

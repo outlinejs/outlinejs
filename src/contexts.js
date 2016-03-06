@@ -1,3 +1,4 @@
+import Translation from './utils/translation';
 export let runtime = null;
 export let settings = null;
 
@@ -6,6 +7,7 @@ export class RequestContext {
     this._user = null;
     this._state = null;
     this._language = null;
+    this._i18n = new Translation();
   }
 
   get user() {
@@ -29,7 +31,12 @@ export class RequestContext {
   }
 
   set language(value) {
+    this._i18n.language = value;
     this._language = value;
+  }
+
+  get i18n() {
+    return this._i18n;
   }
 
   isState(state) {
@@ -52,6 +59,21 @@ class RuntimeContext {
     for (var mid of settings.MIDDLEWARE) {
       this._middleware.push(new mid.default()); //eslint-disable-line new-cap
     }
+    if (this.isServer) {
+      Error.prepareStackTrace = (error, stack) => {
+        return stack;
+      };
+    }
+  }
+
+  getTrace(e) {
+    var trace = '';
+    var spacer = ''
+    for (let frame of e.stack) {
+      trace += `\n${spacer} ${frame.getTypeName()}.${frame.getFunctionName()} [line: ${frame.getLineNumber()}]`;
+      spacer += '--';
+    }
+    return trace;
   }
 
   get middleware() {
