@@ -11,7 +11,8 @@ export class BaseComponent extends React.Component {
 
   static get contextTypes() {
     return {
-      request: React.PropTypes.object
+      request: React.PropTypes.object,
+      response: React.PropTypes.object
     };
   }
 

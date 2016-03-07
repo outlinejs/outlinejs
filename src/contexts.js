@@ -1,13 +1,17 @@
 import Translation from './utils/translation';
+import querystring from 'querystring';
+import url from 'url';
 export let runtime = null;
 export let settings = null;
 
 export class RequestContext {
-  constructor() {
+  constructor(request) {
     this._user = null;
     this._state = null;
     this._language = null;
     this._i18n = new Translation();
+    this._request = request;
+    this._query = null;
   }
 
   get user() {
@@ -16,6 +20,29 @@ export class RequestContext {
 
   set user(value) {
     this._user = value;
+  }
+
+  get isSecure() {
+    if (runtime.isClient) {
+      require('html5-history-api');
+      var location = window.history.location || window.location;
+      return location.href.indexOf('https://') === 0;
+    } else {
+      if (this._request.connection.encrypted || this._request.headers['X-Forwarded-Proto'] === 'https') {
+        return true;
+      }
+      return false;
+    }
+  }
+
+  get absoluteUrl() {
+    if (runtime.isClient) {
+      require('html5-history-api');
+      var location = window.history.location || window.location;
+      return location.href;
+    } else {
+      return `${this.isSecure ? 'https' : 'http'}://${this._request.headers.host.replace(/:80$/, '')}${this._request.url}`;
+    }
   }
 
   get state() {
@@ -41,6 +68,13 @@ export class RequestContext {
 
   isState(state) {
     return this.state.indexOf(state) === 0;
+  }
+
+  query() {
+    if (!this._query) {
+      this._query = querystring.decode(url.parse(this.absoluteUrl).query);
+    }
+    return this._query;
   }
 }
 
@@ -68,7 +102,7 @@ class RuntimeContext {
 
   getTrace(e) {
     var trace = '';
-    var spacer = ''
+    var spacer = '';
     for (let frame of e.stack) {
       trace += `\n${spacer} ${frame.getTypeName()}.${frame.getFunctionName()} [line: ${frame.getLineNumber()}]`;
       spacer += '--';

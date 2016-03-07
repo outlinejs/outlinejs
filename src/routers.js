@@ -74,7 +74,7 @@ export class RouteUtils {
 
   static parseUrl(path, req = {}, res = {}) {
     // add request context props to request
-    var requestContext = new RequestContext();
+    var requestContext = new RequestContext(req);
     var requestContextProto = Reflect.getPrototypeOf(requestContext);
     for (let key of Reflect.ownKeys(requestContextProto)) {
       let descriptor = Reflect.getOwnPropertyDescriptor(requestContextProto, key);
@@ -91,6 +91,31 @@ export class RouteUtils {
         req[key] = requestContext[key];
       }
     }
+    // response patch
+    res.navigate = (to, params = {}) => {
+      var url; //eslint-disable-line no-shadow
+      try {
+        url = RouteUtils.reverse(to, params);
+      } catch (ex) {
+        url = to;
+        if (runtime.isClient) {
+          window.location.href = url;
+          return;
+        }
+      }
+      if (runtime.isClient) {
+        var history = require('html5-history-api');
+        history.pushState(null, null, url);
+        RouteUtils.parseUrl(url);
+      } else {
+        res.writeHead(302, {Location: url});
+        res.end();
+      }
+    };
+    res.error = (ex) => {
+      res.writeHead(500, {'Content-Type': 'text/plain'});
+      res.end(`${ex.toString()}\n${runtime.getTrace(ex)}`);
+    };
     //crossroad url parsing
     crossroads.parse(path, [req, res]);
   }
@@ -98,32 +123,6 @@ export class RouteUtils {
   static reverse(state, params = {}) {
     var url = _stateRouteMapping[state].interpolate(params); //eslint-disable-line no-shadow
     return `/${url}`;
-  }
-
-  static navigate(state, params = {}) {
-    var url = RouteUtils.reverse(state, params); //eslint-disable-line no-shadow
-    if (runtime.isClient) {
-      var history = require('html5-history-api');
-      history.pushState(null, null, url);
-      RouteUtils.parseUrl(url);
-    }
-  }
-
-  static query() {
-    //TODO: server side
-    var href = window.location.href;
-    var result = {};
-    if (href.includes('#')) {
-      href = href.split('#')[1];
-    }
-    href = href.split('?')[1];
-    if (href) {
-      for (let param of href.split('&')) {
-        let [k, v] = param.split('=');
-        result[decodeURIComponent(k)] = decodeURIComponent(v);
-      }
-    }
-    return result;
   }
 
   static activeCssClass(request, state, cssClass = 'active') {
@@ -170,11 +169,13 @@ export class BaseRouter {
       if (runtime.isClient) {
         controller.reconcileWithServer();
       }
-      controller.init(...args);
-    }, (error) => {
-      if (error) {
-        console.log(error);
+      try {
+        controller.init(...args);
+      } catch (ex) {
+        res.error(ex);
       }
+    }, (error) => {
+      res.error(error);
     });
   }
 
@@ -219,7 +220,7 @@ export class Link extends BaseComponent {
 
     if (allowTransition) {
       const { state, params } = this.props;
-      RouteUtils.navigate(state, params);
+      this.response.navigate(state, params);
     }
   }
 

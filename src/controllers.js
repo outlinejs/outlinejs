@@ -52,12 +52,12 @@ export class BaseController {
     var View = this.getViewForRendering(); //eslint-disable-line
     // it's the root view, remove the child context request
     if (runtime.isClient) {
-      this._viewInstance = ReactDOM.render(<View {...context} delegate={this} __request={this.request} />, runtime.renderContainerObject);
+      this._viewInstance = ReactDOM.render(<View {...context} delegate={this} __request={this.request} __response={this.response} />, runtime.renderContainerObject);
     } else {
       try {
         //render react component
         var html = runtime.renderContainerObject.replace(runtime.serverRenderContainerPattern, (match, pre, inside, post) => {
-          return pre + ReactDOMServer.renderToString(<View {...context} delegate={this} __request={this.request}/>) + post;
+          return pre + ReactDOMServer.renderToString(<View {...context} delegate={this} __request={this.request} __response={this.response} />) + post;
         });
         //render react component props
         var propScript = ReactDOMServer.renderToStaticMarkup(React.DOM.script({
@@ -70,8 +70,7 @@ export class BaseController {
         this.response.writeHead(200, {'Content-Type': 'text/html'});
         this.response.end(html);
       } catch (ex) {
-        this.response.writeHead(500, {'Content-Type': 'text/plain'});
-        this.response.end(`${ex.toString()}\n${runtime.getTrace(ex)}`);
+        this.response.error(ex);
       }
     }
   }
