@@ -12,7 +12,7 @@ export class BaseView extends BaseComponent {
   getChildContext() {
     return {
       request: this.props.__request,
-      response: this.props.__request
+      response: this.props.__response
     };
   }
 }

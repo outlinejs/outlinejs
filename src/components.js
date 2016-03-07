@@ -20,6 +20,10 @@ export class BaseComponent extends React.Component {
     return this.props.__request || this.context.request;
   }
 
+  get response() {
+    return this.props.__response || this.context.response;
+  }
+
   get i18n() {
     return this.request.i18n;
   }

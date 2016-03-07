@@ -113,8 +113,12 @@ export class RouteUtils {
       }
     };
     res.error = (ex) => {
-      res.writeHead(500, {'Content-Type': 'text/plain'});
-      res.end(`${ex.toString()}\n${runtime.getTrace(ex)}`);
+      if (runtime.isServer) {
+        res.writeHead(500, {'Content-Type': 'text/plain'});
+        res.end(`${ex.toString()}\n${runtime.getTrace(ex)}`);
+      } else {
+        console.error(ex);
+      }
     };
     //crossroad url parsing
     crossroads.parse(path, [req, res]);
