@@ -66,15 +66,15 @@ export class RequestContext {
     return this._i18n;
   }
 
-  isState(state) {
-    return this.state.indexOf(state) === 0;
-  }
-
-  query() {
+  get query() {
     if (!this._query) {
       this._query = querystring.decode(url.parse(this.absoluteUrl).query);
     }
     return this._query;
+  }
+
+  isState(state) {
+    return this.state.indexOf(state) === 0;
   }
 }
 
