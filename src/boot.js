@@ -4,7 +4,6 @@
  */
 import 'babel-polyfill';
 import { _initContexts } from './contexts';
-import './utils/patches/backbone';
 import { RouteUtils } from './routers';
 
 /**

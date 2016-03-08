@@ -12,7 +12,7 @@ let httpMethodMap = {
   read: 'GET'
 };
 
-Backbone.sync = function (method, model, options) {
+export function backboneSync(method, model, options) {
   var p = new Promise(
     (resolve, reject) => {
       var reqUrl = options.url;
@@ -41,6 +41,10 @@ Backbone.sync = function (method, model, options) {
         params.headers['Content-Type'] = 'application/json';
         bodyData = JSON.stringify(options.attrs || model.toJSON(options));
         params.headers['Content-Length'] = Buffer.byteLength(bodyData);
+      }
+
+      if (options.headers) {
+        params.headers = Object.assign(options.headers, params.headers);
       }
 
       if (params.method === 'GET') {
@@ -102,3 +106,5 @@ Backbone.sync = function (method, model, options) {
     });
   return p;
 };
+
+Backbone.sync = backboneSync;

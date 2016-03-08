@@ -1,6 +1,8 @@
 import Translation from './utils/translation';
 import querystring from 'querystring';
 import url from 'url';
+import Backbone from 'backbone';
+import { backboneSync } from './utils/patches/backbone';
 export let runtime = null;
 export let settings = null;
 
@@ -132,6 +134,14 @@ class RuntimeContext {
 
   get isServer() {
     return !this.isClient;
+  }
+
+  get backboneSyncFunction() {
+    return Backbone.sync;
+  }
+
+  set backboneSyncFunction(value) {
+    Backbone.sync = value;
   }
 }
 
