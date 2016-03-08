@@ -139,9 +139,6 @@ export class RouteUtils {
 
 export class BaseRouter {
   constructor(prefix = '') {
-    if (prefix !== '') {
-      prefix = `${prefix}/`;
-    }
     //find subRoutes
     for (let rt of Object.keys(this.urlPatterns)) {
       let rtObj = this.urlPatterns[rt];
