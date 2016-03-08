@@ -1,6 +1,6 @@
 {
   "name": "outlinejs",
-  "version": "1.3.21",
+  "version": "1.3.22",
   "description": "Javascript App Outline",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

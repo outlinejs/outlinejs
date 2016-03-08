@@ -2,6 +2,7 @@ import { RequestContext, runtime } from './contexts';
 import crossroads from 'crossroads';
 import React from 'react';
 import { BaseComponent } from './components';
+import { settings } from './contexts';
 
 let _stateRouteMapping = {};
 
@@ -168,6 +169,19 @@ export class BaseRouter {
       }
     }
     Promise.all(midPromises).then(() => {
+      if (Controller.loginRequired && !req.user) {
+        try {
+          var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE);
+        } catch (ex) {
+          res.error(new Error(`State ${settings.LOGIN_STATE} is undefined`));
+          return;
+        }
+        var nextUrl = encodeURIComponent(req.absoluteUrl);
+        loginUrl = `${loginUrl}?next-url=${nextUrl}`;
+        res.navigate(loginUrl);
+        return;
+      }
+
       req.state = urlDef.state;
       let controller = new Controller(req, res);
       if (runtime.isClient) {
