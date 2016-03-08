@@ -10,9 +10,16 @@ export class BaseView extends BaseComponent {
   }
 
   getChildContext() {
-    return {
+    return this.props.__context || {
       request: this.props.__request,
       response: this.props.__response
     };
+  }
+}
+
+export class BaseLayoutView extends BaseView {
+  renderContent() {
+    var Content = this.props.content;
+    return <Content { ...this.props.contentProps } delegate={ this.delegate } __context={this.getChildContext()} />;
   }
 }
