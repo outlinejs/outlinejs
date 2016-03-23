@@ -196,10 +196,11 @@ export default class {
     });
 
     this.gulp.task('ojs:pot', () => {
-      return this.gulp.src('project/**/*.js')
-        .pipe(gettext({}))
-        .pipe($.rename('template.pot'))
-        .pipe(this.gulp.dest('locale/'));
+      gettext(glob.sync('project/**/*.js'), 'locale/template.pot', (err) => {
+        if (err) {
+          $.util.log(err);
+        }
+      });
     });
 
     this.gulp.task('ojs:locale-build', () => {
