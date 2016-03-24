@@ -105,6 +105,6 @@ export function backboneSync(method, model, options) {
       req.end();
     });
   return p;
-};
+}
 
 Backbone.sync = backboneSync;
