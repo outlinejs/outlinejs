@@ -136,6 +136,14 @@ class RuntimeContext {
     return !this.isClient;
   }
 
+  get currentClientResponse() {
+    return this._currentClientResponse;
+  }
+
+  set currentClientResponse(value) {
+    this._currentClientResponse = value;
+  }
+
   get backboneSyncFunction() {
     return Backbone.sync;
   }

@@ -165,6 +165,10 @@ export class BaseRouter {
         midPromises.push(mid.preControllerInit(req, res));
       }
     }
+    if (runtime.isClient) {
+      //when client, set the current response object so we can control which controller can render the view
+      runtime.currentClientResponse = res;
+    }
     Promise.all(midPromises).then(() => {
       if (Controller.loginRequired && !req.user) {
         try {

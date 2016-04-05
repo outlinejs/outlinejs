@@ -52,7 +52,9 @@ export class BaseController {
     var View = this.getViewForRendering(); //eslint-disable-line
     // it's the root view, remove the child context request
     if (runtime.isClient) {
-      this._viewInstance = ReactDOM.render(<View {...context} delegate={this} __request={this.request} __response={this.response} />, runtime.renderContainerObject);
+      if (runtime.currentClientResponse === this.response) {
+        this._viewInstance = ReactDOM.render(<View {...context} delegate={this} __request={this.request} __response={this.response} />, runtime.renderContainerObject);
+      }
     } else {
       try {
         //render react component
