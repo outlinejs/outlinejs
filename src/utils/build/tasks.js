@@ -175,7 +175,7 @@ export default class {
         .pipe(this.gulp.dest('.tmp'));
     });
 
-    this.gulp.task('ojs:js-build', ['ojs:node-html', 'ojs:env'], () => {
+    this.gulp.task('ojs:js-build', ['ojs:node-html', 'ojs:env', 'ojs:locale-build'], () => {
       var clientBundle = this.getBrowserifyBundle(this.getBrowserify());
       var serverBundle = this.getBrowserifyBundle(this.getBrowserify(false, true, false), false);
       return merge2(clientBundle, serverBundle);
