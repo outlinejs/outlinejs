@@ -1,8 +1,8 @@
-import { RequestContext, runtime } from './contexts';
+import {RequestContext, runtime} from './contexts';
 import crossroads from 'crossroads';
 import React from 'react';
-import { BaseComponent } from './components';
-import { settings } from './contexts';
+import {BaseComponent} from './components';
+import {settings} from './contexts';
 
 let _stateRouteMapping = {};
 
@@ -64,13 +64,24 @@ export class RouteUtils {
   }
 
   static _listenClient() {
-    require('html5-history-api');
-    var location = window.history.location || window.location;
-    var eventDef = window.addEventListener ? ['addEventListener', ''] : ['attachEvent', 'on'];
-    window[eventDef[0]](`${eventDef[1]}popstate`, () => {
+    if (settings.ROUTING_USE_FRAGMENT) {
+      var hasher = require('hasher');
+      var parseHash = (fragment) => {
+        RouteUtils.parseUrl(fragment);
+      };
+      hasher.prependHash = '';
+      hasher.initialized.add(parseHash);
+      hasher.changed.add(parseHash);
+      hasher.init();
+    } else {
+      require('html5-history-api');
+      var location = window.history.location || window.location;
+      var eventDef = window.addEventListener ? ['addEventListener', ''] : ['attachEvent', 'on'];
+      window[eventDef[0]](`${eventDef[1]}popstate`, () => {
+        RouteUtils.parseUrl(location.pathname);
+      }, false);
       RouteUtils.parseUrl(location.pathname);
-    }, false);
-    RouteUtils.parseUrl(location.pathname);
+    }
   }
 
   static parseUrl(path, req = {}, res = {}) {
@@ -81,11 +92,13 @@ export class RouteUtils {
       let descriptor = Reflect.getOwnPropertyDescriptor(requestContextProto, key);
       //props
       if (descriptor.get || descriptor.set) {
-        Object.defineProperty(req, key, { get: () => { //eslint-disable-line no-loop-func
-          return requestContext[key];
-        }, set: (value) => { //eslint-disable-line no-loop-func
-          requestContext[key] = value;
-        }});
+        Object.defineProperty(req, key, {
+          get: () => { //eslint-disable-line no-loop-func
+            return requestContext[key];
+          }, set: (value) => { //eslint-disable-line no-loop-func
+            requestContext[key] = value;
+          }
+        });
       }
       //methods
       if (descriptor.value) {
@@ -105,9 +118,14 @@ export class RouteUtils {
         }
       }
       if (runtime.isClient) {
-        var history = require('html5-history-api');
-        history.pushState(null, null, url);
-        RouteUtils.parseUrl(url);
+        if (settings.ROUTING_USE_FRAGMENT) {
+          var hasher = require('hasher');
+          hasher.setHash(url);
+        } else {
+          var history = require('html5-history-api');
+          history.pushState(null, null, url);
+          RouteUtils.parseUrl(url);
+        }
       } else {
         res.writeHead(302, {Location: url});
         res.end();
@@ -238,7 +256,7 @@ export class Link extends BaseComponent {
     event.preventDefault();
 
     if (allowTransition) {
-      const { state, params } = this.props;
+      const {state, params} = this.props;
       this.response.navigate(state, params);
     }
   }
@@ -252,6 +270,6 @@ export class Link extends BaseComponent {
       }
     }
     props.children = this.props.children;
-    return <a {...props} onClick={this.handleClick.bind(this)} />;
+    return <a {...props} onClick={this.handleClick.bind(this)}/>;
   }
 }
