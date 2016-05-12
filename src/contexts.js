@@ -2,12 +2,90 @@ import Translation from './utils/translation';
 import querystring from 'querystring';
 import url from 'url';
 import Backbone from 'backbone';
-import { backboneSync } from './utils/patches/backbone';
+import {backboneSync} from './utils/patches/backbone';
 export let runtime = null;
 export let settings = null;
 
-export class RequestContext {
+export class DecorableContext {
+
+  decorate(component) {
+    var prototype = Reflect.getPrototypeOf(this);
+    for (let key of Reflect.ownKeys(prototype)) {
+      let descriptor = Reflect.getOwnPropertyDescriptor(prototype, key);
+      //props
+      if (descriptor.get || descriptor.set) {
+        Object.defineProperty(component, key, {
+          get: () => { //eslint-disable-line no-loop-func
+            return this[key];
+          }, set: (value) => { //eslint-disable-line no-loop-func
+            this[key] = value;
+          }
+        });
+      }
+      //methods
+      if (descriptor.value) {
+        component[key] = this[key];
+      }
+    }
+  }
+}
+
+
+export class ResponseContext extends DecorableContext {
+  constructor(response, routeUtils) {
+    super();
+    this._response = response;
+    this._routeUtils = routeUtils;
+  }
+
+  get routeUtils() {
+    return this._routeUtils;
+  }
+
+  get response() {
+    return this._response;
+  }
+
+  navigate(to, params = {}) {
+    var url; //eslint-disable-line no-shadow
+    try {
+      url = this.routeUtils.reverse(to, params);
+    } catch (ex) {
+      url = to;
+      if (runtime.isClient) {
+        window.location.href = url;
+        return;
+      }
+    }
+    if (runtime.isClient) {
+      if (settings.ROUTING_USE_FRAGMENT) {
+        var hasher = require('hasher');
+        hasher.setHash(url);
+      } else {
+        var history = require('html5-history-api');
+        history.pushState(null, null, url);
+        this.routeUtils.parseUrl(url);
+      }
+    } else {
+      this.response.writeHead(302, {Location: url});
+      this.response.end();
+    }
+  }
+
+  error(ex) {
+    if (runtime.isServer) {
+      this.response.writeHead(500, {'Content-Type': 'text/plain'});
+      this.response.end(`${ex.toString()}\n${runtime.getTrace(ex)}`);
+    } else {
+      console.error(ex);
+    }
+  }
+
+}
+
+export class RequestContext extends DecorableContext {
   constructor(request) {
+    super();
     this._user = null;
     this._state = null;
     this._language = null;

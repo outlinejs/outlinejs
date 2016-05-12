@@ -1,4 +1,4 @@
-import {RequestContext, runtime} from './contexts';
+import {RequestContext, ResponseContext, runtime} from './contexts';
 import crossroads from 'crossroads';
 import React from 'react';
 import {BaseComponent} from './components';
@@ -87,58 +87,11 @@ export class RouteUtils {
   static parseUrl(path, req = {}, res = {}) {
     // add request context props to request
     var requestContext = new RequestContext(req);
-    var requestContextProto = Reflect.getPrototypeOf(requestContext);
-    for (let key of Reflect.ownKeys(requestContextProto)) {
-      let descriptor = Reflect.getOwnPropertyDescriptor(requestContextProto, key);
-      //props
-      if (descriptor.get || descriptor.set) {
-        Object.defineProperty(req, key, {
-          get: () => { //eslint-disable-line no-loop-func
-            return requestContext[key];
-          }, set: (value) => { //eslint-disable-line no-loop-func
-            requestContext[key] = value;
-          }
-        });
-      }
-      //methods
-      if (descriptor.value) {
-        req[key] = requestContext[key];
-      }
-    }
-    // response patch
-    res.navigate = (to, params = {}) => {
-      var url; //eslint-disable-line no-shadow
-      try {
-        url = RouteUtils.reverse(to, params);
-      } catch (ex) {
-        url = to;
-        if (runtime.isClient) {
-          window.location.href = url;
-          return;
-        }
-      }
-      if (runtime.isClient) {
-        if (settings.ROUTING_USE_FRAGMENT) {
-          var hasher = require('hasher');
-          hasher.setHash(url);
-        } else {
-          var history = require('html5-history-api');
-          history.pushState(null, null, url);
-          RouteUtils.parseUrl(url);
-        }
-      } else {
-        res.writeHead(302, {Location: url});
-        res.end();
-      }
-    };
-    res.error = (ex) => {
-      if (runtime.isServer) {
-        res.writeHead(500, {'Content-Type': 'text/plain'});
-        res.end(`${ex.toString()}\n${runtime.getTrace(ex)}`);
-      } else {
-        console.error(ex);
-      }
-    };
+    requestContext.decorate(req);
+
+    var responseContext = new ResponseContext(res, this);
+    responseContext.decorate(res);
+  
     //crossroad url parsing
     crossroads.parse(path, [req, res]);
   }
