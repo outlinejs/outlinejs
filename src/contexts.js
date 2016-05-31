@@ -165,6 +165,12 @@ class RuntimeContext {
     this._middleware = [];
     if (this.isClient) {
       this._renderContainerObject = document.getElementById(this.containerNodeId);
+      if (!this._renderContainerObject) {
+        var mainDiv = document.createElement('div');
+        mainDiv.id = 'main';
+        this._renderContainerObject = mainDiv;
+        document.getElementsByTagName('body')[0].appendChild(mainDiv);
+      }
     } else {
       var html = require('__main_html');
       html = html.replace(/"((?:[^"]*?)\.(?:js|css))"/g, '"/$1"');
