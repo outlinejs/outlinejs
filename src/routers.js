@@ -91,7 +91,7 @@ export class RouteUtils {
 
     var responseContext = new ResponseContext(res, this);
     responseContext.decorate(res);
-  
+
     //crossroad url parsing
     crossroads.parse(path, [req, res]);
   }

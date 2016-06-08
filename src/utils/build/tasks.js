@@ -67,20 +67,18 @@ export default class {
     var b = this.browserify(
       Object.assign({}, watch ? watchify.args : {}, {
         entries: files,
-        debug: debug
+        debug: debug,
+        builtins: false,
+        commondir: false,
+        insertGlobalVars: {
+          process: {}
+        }
       })
     );
     b.on('log', $.util.log);
     if (forNode) {
       b = b
-        .require('./.tmp/main.html', {expose: '__main_html'})
-        .exclude('http')
-        .exclude('https')
-        .exclude('url')
-        .exclude('fs')
-        .exclude('querystring')
-        .exclude('buffer')
-        .exclude('console-browserify');
+        .require('./.tmp/main.html', {expose: '__main_html'});
     }
     b = b.exclude('__main_html');
     //include env
@@ -159,7 +157,8 @@ export default class {
       }
       try {
         fs.mkdirSync('./.tmp/');
-      } catch (ex) { } //eslint-disable-line no-empty
+      } catch (ex) {
+      } //eslint-disable-line no-empty
       fs.writeFile('./.tmp/env.json', JSON.stringify(safeEnv), (err) => {
         if (err) {
           $.util.log(err);
@@ -274,7 +273,8 @@ export default class {
     });
 
     this.gulp.task('ojs:fonts-vendor', () => {
-      return this.gulp.src(require('main-bower-files')('**/*.{eot,svg,ttf,woff,woff2}', () => { })
+      return this.gulp.src(require('main-bower-files')('**/*.{eot,svg,ttf,woff,woff2}', () => {
+      })
         .concat('node_modules/**/*.{eot,svg,ttf,woff,woff2}')
         .concat('!node_modules/gulp-if/**/*')
         .concat('!node_modules/browser-sync-ui/**/*')
@@ -352,7 +352,10 @@ export default class {
       ]).on('change', reload);
 
       var nmStarted = false;
-
+      var proxyServer = process.env.server || '0.0.0.0';
+      var proxyPort = parseInt(process.env.port) || 1337;
+      var proxyTarget = `http://${proxyServer}:${proxyPort}/`;
+      var portWatch = parseInt(process.env.portWatch) || 9000;
       $.nodemon({
         script: './.tmp/node-scripts/main.js',
         watch: './.tmp/node-scripts/',
@@ -362,14 +365,14 @@ export default class {
         if (!nmStarted) {
           nmStarted = true;
           var proxy = httpProxy.createProxyServer({
-            target: 'http://localhost:1337/'
+            target: proxyTarget
           }).on('error', (err) => {
             $.util.log(err);
           });
           setTimeout(() => {
             browserSync({
               notify: false,
-              port: 9000,
+              port: portWatch,
               server: {
                 baseDir: ['.tmp', 'project'],
                 routes: {
@@ -392,15 +395,19 @@ export default class {
     });
 
     this.gulp.task('ojs:serve-dist', () => {
+      var proxyServer = process.env.server || '0.0.0.0';
+      var proxyPort = parseInt(process.env.port) || 1337;
+      var proxyTarget = `http://${proxyServer}:${proxyPort}/`;
+      var portWatchDist = parseInt(process.env.portWatch) || 9001;
       return $.nodemon({
         script: './dist/node-scripts/main.js',
         watch: './dist/node-scripts/'
       }).on('start', function () {
         browserSync({
           notify: false,
-          proxy: 'http://localhost:1337',
+          proxy: proxyTarget,
           serveStatic: ['./dist/'],
-          port: 9001
+          port: portWatchDist
         });
       });
     });
