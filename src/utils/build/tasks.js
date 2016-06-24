@@ -331,7 +331,7 @@ export default class {
         .pipe(this.gulp.dest('project'));
     });
 
-    this.gulp.task('ojs:test', ['ojs:lint-test'], () => {
+    this.gulp.task('ojs:test', ['ojs:env', 'ojs:lint-test'], () => {
       var files = glob.sync('project/**/tests/*.js');
       var b = this.getBrowserify(false, false, false, files)
         .plugin(mocaccino, {reporter: 'spec'})
