@@ -250,7 +250,7 @@ export default class {
         .pipe(this.gulp.dest('dist/node-scripts'));
     });
 
-    this.gulp.task('ojs:images', () => {
+    this.gulp.task('ojs:images', ['ojs:images-vendor'], () => {
       return this.gulp.src('project/**/images/**/*')
         .pipe($.if($.if.isFile, $.cache($.imagemin({
           progressive: true,
@@ -264,6 +264,23 @@ export default class {
             this.end();
           })))
         .pipe(this.gulp.dest('dist/static'));
+    });
+
+    this.gulp.task('ojs:images-vendor', () => {
+      return this.gulp.src('node_modules/**/*.{png,jpg,jpeg,gif,bmp,svg}')
+        .pipe($.if($.if.isFile, $.cache($.imagemin({
+          progressive: true,
+          interlaced: true,
+          // don't remove IDs from SVGs, they are often used
+          // as hooks for embedding and styling
+          svgoPlugins: [{cleanupIDs: false}]
+        }))
+          .on('error', function (err) {
+            $.util.log(err);
+            this.end();
+          })))
+        .pipe(this.gulp.dest('.tmp/static/vendor-images'))
+        .pipe(this.gulp.dest('dist/static/vendor-images'));
     });
 
     this.gulp.task('ojs:fonts-apps', () => {
@@ -335,7 +352,7 @@ export default class {
       return this.gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
     });
 
-    this.gulp.task('ojs:serve', ['ojs:js-watch', 'ojs:styles', 'ojs:fonts', 'ojs:pot', 'ojs:locale-build'], () => {
+    this.gulp.task('ojs:serve', ['ojs:js-watch', 'ojs:styles', 'ojs:fonts', 'ojs:pot', 'ojs:locale-build', 'ojs:images-vendor'], () => {
       this.gulp.watch('project/**/styles/*.scss', ['ojs:styles']);
       this.gulp.watch('project/**/media/fonts/**/*', ['ojs:fonts-apps']);
       this.gulp.watch('bower.json', ['ojs:wiredep', 'ojs:fonts-vendor']);
