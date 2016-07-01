@@ -64,15 +64,20 @@ export default class {
    * @param {Array.<string>} files - Browserify entries
    */
   getBrowserify(debug = false, forNode = false, watch = false, files = [this.projectJsEntry]) {
-    var b = this.browserify(
-      Object.assign({}, watch ? watchify.args : {}, {
-        entries: files,
-        debug: debug,
+    var initialOpts = {};
+    if (forNode) {
+      initialOpts = Object.assign(initialOpts, {
         builtins: false,
         commondir: false,
         insertGlobalVars: {
           process: {}
         }
+      });
+    }
+    var b = this.browserify(
+      Object.assign(initialOpts, watch ? watchify.args : {}, {
+        entries: files,
+        debug: debug
       })
     );
     b.on('log', $.util.log);
