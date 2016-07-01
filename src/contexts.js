@@ -213,7 +213,7 @@ class RuntimeContext {
   }
 
   get isClient() {
-    return !!process.browser;
+    return typeof window !== 'undefined';
   }
 
   get isServer() {

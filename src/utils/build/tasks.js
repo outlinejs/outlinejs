@@ -20,6 +20,7 @@ import mocaccino from 'mocaccino';
 import glob from 'glob';
 import phantomic from 'phantomic';
 import httpProxy from 'http-proxy';
+import insertGlobals from 'insert-module-globals';
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -67,11 +68,16 @@ export default class {
     var initialOpts = {};
     if (forNode) {
       initialOpts = Object.assign(initialOpts, {
-        builtins: false,
-        commondir: false,
-        insertGlobalVars: {
-          process: {}
-        }
+        // builtins: false,
+        // commondir: false,
+        // insertGlobalVars: {
+        //   __filename: insertGlobals.vars.__filename,
+        //   __dirname: insertGlobals.vars.__dirname,
+        //   process: function () {
+        //     return;
+        //   }
+        // },
+        // browserField: false
       });
     }
     var b = this.browserify(
@@ -83,7 +89,14 @@ export default class {
     b.on('log', $.util.log);
     if (forNode) {
       b = b
-        .require('./.tmp/main.html', {expose: '__main_html'});
+        .require('./.tmp/main.html', {expose: '__main_html'})
+        .exclude('http')
+        .exclude('https')
+        .exclude('url')
+        .exclude('fs')
+        .exclude('querystring')
+        .exclude('buffer')
+        .exclude('console-browserify');
     }
     b = b.exclude('__main_html');
     //include env

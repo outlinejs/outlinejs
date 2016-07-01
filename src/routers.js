@@ -52,8 +52,8 @@ export class RouteUtils {
   static _listenServer() {
     var http = require('http');
     var urlModule = require('url');
-    var proxyServer = process.env.server || '0.0.0.0';
-    var proxyPort = parseInt(process.env.port) || 1337;
+    var proxyServer = '0.0.0.0';//process.env.server || '0.0.0.0';
+    var proxyPort = 1337;//parseInt(process.env.port) || 1337;
     crossroads.ignoreState = true;
     crossroads.bypassed.add((req, res) => {
       res.writeHead(404, {'Content-Type': 'text/html'});
