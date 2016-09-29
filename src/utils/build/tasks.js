@@ -182,7 +182,7 @@ export default class {
       return merge2(clientBundle, serverBundle);
     });
 
-    this.gulp.task('ojs:js-watch', ['ojs:node-html', 'ojs:env'], () => {
+    this.gulp.task('ojs:js-watch', ['ojs:node-html', 'ojs:env', 'ojs:locale-build'], () => {
       var bc = this.getBrowserify(true, false, true);
       var bs = this.getBrowserify(true, true, true);
       var clientBundle = this.getBrowserifyBundle(bc);
