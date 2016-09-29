@@ -11,4 +11,7 @@ export class BaseSettings {
   get APPEND_SLASH() {
     return true;
   }
+  get SERVER_SIDE_LINK_ONLY() {
+    return false;
+  }
 }

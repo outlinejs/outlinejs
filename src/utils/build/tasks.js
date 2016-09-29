@@ -20,6 +20,7 @@ import mocaccino from 'mocaccino';
 import glob from 'glob';
 import phantomic from 'phantomic';
 import httpProxy from 'http-proxy';
+import insertGlobals from 'insert-module-globals';
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -64,8 +65,23 @@ export default class {
    * @param {Array.<string>} files - Browserify entries
    */
   getBrowserify(debug = false, forNode = false, watch = false, files = [this.projectJsEntry]) {
+    var initialOpts = {};
+    if (forNode) {
+      initialOpts = Object.assign(initialOpts, {
+        // builtins: false,
+        // commondir: false,
+        // insertGlobalVars: {
+        //   __filename: insertGlobals.vars.__filename,
+        //   __dirname: insertGlobals.vars.__dirname,
+        //   process: function () {
+        //     return;
+        //   }
+        // },
+        // browserField: false
+      });
+    }
     var b = this.browserify(
-      Object.assign({}, watch ? watchify.args : {}, {
+      Object.assign(initialOpts, watch ? watchify.args : {}, {
         entries: files,
         debug: debug
       })
@@ -331,7 +347,7 @@ export default class {
         .pipe(this.gulp.dest('project'));
     });
 
-    this.gulp.task('ojs:test', ['ojs:lint-test'], () => {
+    this.gulp.task('ojs:test', ['ojs:env', 'ojs:pot', 'ojs:locale-build', 'ojs:lint-test'], () => {
       var files = glob.sync('project/**/tests/*.js');
       var b = this.getBrowserify(false, false, false, files)
         .plugin(mocaccino, {reporter: 'spec'})
@@ -371,7 +387,10 @@ export default class {
       ]).on('change', reload);
 
       var nmStarted = false;
-
+      var proxyServer = process.env.server || '0.0.0.0';
+      var proxyPort = parseInt(process.env.port) || 1337;
+      var proxyTarget = `http://${proxyServer}:${proxyPort}/`;
+      var portWatch = parseInt(process.env.portWatch) || 9000;
       $.nodemon({
         script: './.tmp/node-scripts/main.js',
         watch: './.tmp/node-scripts/',
@@ -381,14 +400,14 @@ export default class {
         if (!nmStarted) {
           nmStarted = true;
           var proxy = httpProxy.createProxyServer({
-            target: 'http://localhost:1337/'
+            target: proxyTarget
           }).on('error', (err) => {
             $.util.log(err);
           });
           setTimeout(() => {
             browserSync({
               notify: false,
-              port: 9000,
+              port: portWatch,
               server: {
                 baseDir: ['.tmp', 'project'],
                 routes: {
@@ -411,15 +430,19 @@ export default class {
     });
 
     this.gulp.task('ojs:serve-dist', () => {
+      var proxyServer = process.env.server || '0.0.0.0';
+      var proxyPort = parseInt(process.env.port) || 1337;
+      var proxyTarget = `http://${proxyServer}:${proxyPort}/`;
+      var portWatchDist = parseInt(process.env.portWatch) || 9001;
       return $.nodemon({
         script: './dist/node-scripts/main.js',
         watch: './dist/node-scripts/'
       }).on('start', function () {
         browserSync({
           notify: false,
-          proxy: 'http://localhost:1337',
+          proxy: proxyTarget,
           serveStatic: ['./dist/'],
-          port: 9001
+          port: portWatchDist
         });
       });
     });
