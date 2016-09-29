@@ -216,13 +216,26 @@ export class Link extends BaseComponent {
 
   render() {
     var props = {};
-    props.href = RouteUtils.reverse(this.props.state, this.props.params);
-    if (this.props.activeClassName) {
+    var { state, params, className, activeClassName, children, style, title } = this.props;
+
+    props.href = RouteUtils.reverse(state, params);
+
+    if (activeClassName) {
       if (this.request && this.request.isState(this.props.state)) {
-        props.className = this.props.className === '' ? this.props.activeClassName : `${this.props.className} ${this.props.activeClassName}`;
+        props.className = className === '' ? activeClassName : `${className} ${activeClassName}`;
       }
     }
-    props.children = this.props.children;
-    return <a {...props} onClick={this.handleClick.bind(this)}/>;
+
+    if (style) {
+      props.style = style;
+    }
+
+    if (title) {
+      props.title = title;
+    }
+
+    props.children = children;
+
+    return <a {...props} onClick={ this.handleClick.bind(this) } />;
   }
 }
