@@ -62,9 +62,13 @@ export class ResponseContext extends DecorableContext {
         var hasher = require('hasher');
         hasher.setHash(url);
       } else {
-        var history = require('html5-history-api');
-        history.pushState(null, null, url);
-        this.routeUtils.parseUrl(url);
+        if (settings.SERVER_SIDE_LINK_ONLY) {
+          window.location.href = url;
+        } else {
+          var history = require('html5-history-api');
+          history.pushState(null, null, url);
+          this.routeUtils.parseUrl(url);
+        }
       }
     } else {
       this.response.writeHead(302, {Location: url});
