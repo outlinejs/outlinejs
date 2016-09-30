@@ -38,7 +38,8 @@ export class Link extends BaseComponent {
     event.preventDefault();
 
     if (allowTransition) {
-      const {state, params} = this.props;
+      const { state, params } = this.props;
+
       this.response.navigate(state, params);
     }
   }
@@ -50,8 +51,12 @@ export class Link extends BaseComponent {
     props.href = RouteUtils.reverse(state, params);
 
     if (activeClassName) {
-      if (this.request && this.request.isState(this.props.state)) {
-        props.className = className === '' ? activeClassName : `${className} ${activeClassName}`;
+      if (this.request && this.request.absoluteUrl.endsWith(props.href)) {
+        if (className) {
+          props.className += ` ${activeClassName}`;
+        } else {
+          props.className = activeClassName;
+        }
       }
     }
 
