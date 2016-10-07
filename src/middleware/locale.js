@@ -3,6 +3,26 @@ import Cookies from 'js-cookie';
 import { runtime, settings } from '../contexts';
 
 export default class {
+  urlStrategy(request) {
+    // cleanup language value
+    let language = request.url.split('/')[1].toLowerCase().trim();
+
+    // cleanup array elements converting to lowercase and trim it
+    let supportedLanguages = settings.LANGUAGES.map((item) => {
+      return item.toLowerCase().trim();
+    });
+
+    // check if current value of language is supported
+    let languageIndex = supportedLanguages.indexOf(language);
+
+    if (languageIndex !== -1) {
+      return settings.LANGUAGES[languageIndex];
+    }
+
+    // the strategy has fail try with next strategy
+    return null;
+  }
+
   qsStrategy(request) {
     let qs = require('qs');
     let parsedQueryString = qs.parse(request.query);
@@ -84,7 +104,7 @@ export default class {
 
   preControllerInit(request, response) {
     // define strategies priority
-    var availableStrategies = [this.qsStrategy, this.cookieStrategy, this.headerStrategy, this.defaultStrategy];
+    var availableStrategies = [this.urlStrategy, this.qsStrategy, this.cookieStrategy, this.headerStrategy, this.defaultStrategy];
 
     return new Promise((resolve) => {
       if (runtime.isServer) {
