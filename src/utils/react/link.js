@@ -48,7 +48,7 @@ export class Link extends BaseComponent {
     var props = {};
     var { state, params, className, activeClassName, children, style, title } = this.props;
 
-    props.href = RouteUtils.reverse(state, params);
+    props.href = RouteUtils.reverse(state, params, this.request);
 
     if (activeClassName) {
       if (this.request && this.request.absoluteUrl.endsWith(props.href)) {

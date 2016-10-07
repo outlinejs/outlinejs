@@ -1,8 +1,7 @@
-import {RequestContext, ResponseContext, runtime} from './contexts';
 import crossroads from 'crossroads';
-import React from 'react';
-import {BaseComponent} from './components';
-import {settings} from './contexts';
+
+import { RequestContext, ResponseContext, runtime } from './contexts';
+import { settings } from './contexts';
 
 let _stateRouteMapping = {};
 
@@ -31,8 +30,15 @@ class IncludeDefinition {
   }
 }
 
-export function url(state, controller) {
-  return new UrlDefinition(state, controller);
+export function i18nUrl(state, controller) {
+  let languages = settings.LANGUAGES;
+  let urlDefinition = [];
+
+  languages.forEach(function (language) {
+    urlDefinition.push(new UrlDefinition(language + ':' + state, controller, true));
+  });
+
+  return urlDefinition;
 }
 
 export function include(router) {
@@ -91,15 +97,29 @@ export class RouteUtils {
     var requestContext = new RequestContext(req);
     requestContext.decorate(req);
 
-    var responseContext = new ResponseContext(res, this);
+    console.info('req', req);
+
+    var responseContext = new ResponseContext(res, req, this);
     responseContext.decorate(res);
 
     //crossroad url parsing
     crossroads.parse(path, [req, res]);
   }
 
-  static reverse(state, params = {}) {
+  static reverse(state, params = {}, request = null) {
+    let language = settings.DEFAULT_LANGUAGE;
+
+    // when a request is present set language
+    // with the current request language
+    if (request !== null) {
+      language = request.i18n.language;
+    }
+
+    // update the state with the current language
+    state = language + ':' + state;
+
     var url = _stateRouteMapping[state].interpolate(params); //eslint-disable-line no-shadow
+
     return `/${url}`;
   }
 
@@ -112,20 +132,29 @@ export class RouteUtils {
 
 export class BaseRouter {
   constructor(prefix = '') {
-    //find subRoutes
-    for (let rt of Object.keys(this.urlPatterns)) {
-      let rtObj = this.urlPatterns[rt];
-      if (rt !== '') {
-        rt = `${rt}/`;
+    //console.info('urls', this.urlPatterns);
+    // init the routing mapping
+    for (let item of Object.keys(this.urlPatterns)) {
+      let urlPattern = this.urlPatterns[item];
+
+      if (item !== '') {
+        item = `${item}/`;
       }
-      if (rtObj instanceof IncludeDefinition) {
-        //instantiate sub router
-        new rtObj.router(`${prefix}${rt}`); //eslint-disable-line new-cap, no-new
+
+      if (urlPattern instanceof IncludeDefinition) {
+        // init a sub router modules
+        new urlPattern.router(`${prefix}${item}`); //eslint-disable-line new-cap, no-new
       } else {
-        var rUrl = `${prefix}${rt}`;
-        _stateRouteMapping[rtObj.state] = crossroads.addRoute(rUrl, (...args) => { //eslint-disable-line no-loop-func
-          this.routeTo(rtObj, ...args);
-        });
+        for (let urlDefinition of urlPattern) {
+          let language = urlDefinition.state.split(':')[0];
+          let routeUrl = `${language}/${prefix}${item}`;
+
+          _stateRouteMapping[urlDefinition.state] = crossroads.addRoute(routeUrl, (...args) => { //eslint-disable-line no-loop-func
+            this.routeTo(urlDefinition, ...args);
+          });
+
+          //console.info(_stateRouteMapping);
+        }
       }
     }
   }
@@ -139,7 +168,7 @@ export class BaseRouter {
       }
     }
     if (runtime.isClient) {
-      //when client, set the current response object so we can control which controller can render the view
+      // when client, set the current response object so we can control which controller can render the view
       runtime.currentClientResponse = res;
     }
     Promise.all(midPromises).then(() => {

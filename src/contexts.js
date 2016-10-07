@@ -1,15 +1,17 @@
-import Translation from './utils/translation';
 import querystring from 'querystring';
 import url from 'url';
 import Backbone from 'backbone';
-import {backboneSync} from './utils/patches/backbone';
+
+import { RouteUtils } from '../../routers';
+import Translation from './utils/translation';
+
 export let runtime = null;
 export let settings = null;
 
 export class DecorableContext {
-
   decorate(component) {
     var prototype = Reflect.getPrototypeOf(this);
+
     for (let key of Reflect.ownKeys(prototype)) {
       let descriptor = Reflect.getOwnPropertyDescriptor(prototype, key);
       //props
@@ -30,26 +32,34 @@ export class DecorableContext {
   }
 }
 
-
 export class ResponseContext extends DecorableContext {
-  constructor(response, routeUtils) {
+  constructor(response, request, routeUtils) {
     super();
-    this._response = response;
-    this._routeUtils = routeUtils;
-  }
 
-  get routeUtils() {
-    return this._routeUtils;
+    this._response = response;
+    this._request = request;
+    this._routeUtils = routeUtils;
   }
 
   get response() {
     return this._response;
   }
 
+  get request() {
+    return this._request;
+  }
+
+  get routeUtils() {
+    return this._routeUtils;
+  }
+
   navigate(to, params = {}) {
+    console.info('request', this.request);
+
     var url; //eslint-disable-line no-shadow
+
     try {
-      url = this.routeUtils.reverse(to, params);
+      url = RouteUtils.reverse(to, params, this.request);
     } catch (ex) {
       url = to;
       if (runtime.isClient) {
@@ -67,7 +77,7 @@ export class ResponseContext extends DecorableContext {
         } else {
           var history = require('html5-history-api');
           history.pushState(null, null, url);
-          this.routeUtils.parseUrl(url);
+          RouteUtils.parseUrl(url);
         }
       }
     } else {
