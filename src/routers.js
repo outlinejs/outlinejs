@@ -143,10 +143,17 @@ export class BaseRouter {
         // init a sub router modules
         new urlPattern.router(`${prefix}${item}`); //eslint-disable-line new-cap, no-new
       } else {
+        // urlPattern is an array of urlDefinition one
+        // for each supported language
         for (let urlDefinition of urlPattern) {
+          // language can be safety detect from first part
+          // of state
           let language = urlDefinition.state.split(':')[0];
           let routeUrl = `${language}/${prefix}${item}`;
 
+          // check if the current url keyword has been translated,
+          // if there is not a translation will be used the default routeUrl
+          // value
           try {
             let getTextFileValue = language.replace('-', '_');
             let i18n = new Jed(require(`__locale_${getTextFileValue}`));
