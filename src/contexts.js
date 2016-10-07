@@ -2,7 +2,7 @@ import querystring from 'querystring';
 import url from 'url';
 import Backbone from 'backbone';
 
-import { RouteUtils } from '../../routers';
+import { RouteUtils } from './routers';
 import Translation from './utils/translation';
 
 export let runtime = null;
@@ -54,19 +54,20 @@ export class ResponseContext extends DecorableContext {
   }
 
   navigate(to, params = {}) {
-    console.info('request', this.request);
-
     var url; //eslint-disable-line no-shadow
 
     try {
       url = RouteUtils.reverse(to, params, this.request);
     } catch (ex) {
       url = to;
+
       if (runtime.isClient) {
         window.location.href = url;
+
         return;
       }
     }
+
     if (runtime.isClient) {
       if (settings.ROUTING_USE_FRAGMENT) {
         var hasher = require('hasher');

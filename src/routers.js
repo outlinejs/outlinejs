@@ -1,5 +1,6 @@
 import crossroads from 'crossroads';
 
+import { Jed } from 'jed';
 import { RequestContext, ResponseContext, runtime } from './contexts';
 import { settings } from './contexts';
 
@@ -97,8 +98,6 @@ export class RouteUtils {
     var requestContext = new RequestContext(req);
     requestContext.decorate(req);
 
-    console.info('req', req);
-
     var responseContext = new ResponseContext(res, req, this);
     responseContext.decorate(res);
 
@@ -132,7 +131,6 @@ export class RouteUtils {
 
 export class BaseRouter {
   constructor(prefix = '') {
-    //console.info('urls', this.urlPatterns);
     // init the routing mapping
     for (let item of Object.keys(this.urlPatterns)) {
       let urlPattern = this.urlPatterns[item];
@@ -149,11 +147,18 @@ export class BaseRouter {
           let language = urlDefinition.state.split(':')[0];
           let routeUrl = `${language}/${prefix}${item}`;
 
+          try {
+            let getTextFileValue = language.replace('-', '_');
+            let i18n = new Jed(require(`__locale_${getTextFileValue}`));
+
+            routeUrl = i18n.gettext(`${prefix}${item}`);
+          } catch (ex) {
+            console.warn(`The following error has occurred: ${ex}`);
+          }
+
           _stateRouteMapping[urlDefinition.state] = crossroads.addRoute(routeUrl, (...args) => { //eslint-disable-line no-loop-func
             this.routeTo(urlDefinition, ...args);
           });
-
-          //console.info(_stateRouteMapping);
         }
       }
     }

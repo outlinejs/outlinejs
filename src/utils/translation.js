@@ -29,6 +29,7 @@ export default class {
 
   gettext(msgid) {
     var currentDictionary = dictionaries[this._language];
+
     if (currentDictionary) {
       return currentDictionary.gettext(msgid);
     }
