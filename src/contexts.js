@@ -2,7 +2,6 @@ import querystring from 'querystring';
 import url from 'url';
 import Backbone from 'backbone';
 
-import { RouteUtils } from './routers';
 import Translation from './utils/translation';
 
 export let runtime = null;
@@ -33,12 +32,12 @@ export class DecorableContext {
 }
 
 export class ResponseContext extends DecorableContext {
-  constructor(response, request, routeUtils) {
+  constructor(response, request) {
     super();
 
     this._response = response;
     this._request = request;
-    this._routeUtils = routeUtils;
+    this._router = require('./routers');
   }
 
   get response() {
@@ -50,15 +49,17 @@ export class ResponseContext extends DecorableContext {
   }
 
   get routeUtils() {
-    return this._routeUtils;
+    return this._router.RouteUtils;
   }
 
   navigate(to, params = {}) {
     var url; //eslint-disable-line no-shadow
 
     try {
-      url = RouteUtils.reverse(to, params, this.request);
+      url = this.routeUtils.reverse(to, params, this.request);
     } catch (ex) {
+      console.error(ex);
+
       url = to;
 
       if (runtime.isClient) {
@@ -78,7 +79,7 @@ export class ResponseContext extends DecorableContext {
         } else {
           var history = require('html5-history-api');
           history.pushState(null, null, url);
-          RouteUtils.parseUrl(url);
+          this.routeUtils.parseUrl(url);
         }
       }
     } else {

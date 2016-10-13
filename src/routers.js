@@ -98,7 +98,7 @@ export class RouteUtils {
     var requestContext = new RequestContext(req);
     requestContext.decorate(req);
 
-    var responseContext = new ResponseContext(res, req, this);
+    var responseContext = new ResponseContext(res, req);
     responseContext.decorate(res);
 
     //crossroad url parsing
@@ -159,8 +159,11 @@ export class BaseRouter {
             let i18n = new Jed(require(`__locale_${getTextFileValue}`));
 
             routeUrl = i18n.gettext(`${prefix}${item}`);
+
+            // add the current language
+            routeUrl = `${language}/${routeUrl}`;
           } catch (ex) {
-            console.warn(`The following error has occurred: ${ex}`);
+            console.warn(`The following error has occurred translating '${prefix}${item}': ${ex}`);
           }
 
           _stateRouteMapping[urlDefinition.state] = crossroads.addRoute(routeUrl, (...args) => { //eslint-disable-line no-loop-func
