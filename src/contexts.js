@@ -1,6 +1,7 @@
 import querystring from 'querystring';
 import url from 'url';
 import Backbone from 'backbone';
+import { backboneSync } from './utils/patches/backbone';
 
 import Translation from './utils/translation';
 
