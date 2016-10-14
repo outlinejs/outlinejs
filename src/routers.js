@@ -1,8 +1,8 @@
-import {RequestContext, ResponseContext, runtime} from './contexts';
 import crossroads from 'crossroads';
-import React from 'react';
-import {BaseComponent} from './components';
-import {settings} from './contexts';
+
+import { Jed } from 'jed';
+import { RequestContext, ResponseContext, runtime } from './contexts';
+import { settings } from './contexts';
 
 let _stateRouteMapping = {};
 
@@ -31,8 +31,15 @@ class IncludeDefinition {
   }
 }
 
-export function url(state, controller) {
-  return new UrlDefinition(state, controller);
+export function i18nUrl(state, controller) {
+  let languages = settings.LANGUAGES;
+  let urlDefinition = [];
+
+  languages.forEach(function (language) {
+    urlDefinition.push(new UrlDefinition(language + ':' + state, controller, true));
+  });
+
+  return urlDefinition;
 }
 
 export function include(router) {
@@ -91,15 +98,27 @@ export class RouteUtils {
     var requestContext = new RequestContext(req);
     requestContext.decorate(req);
 
-    var responseContext = new ResponseContext(res, this);
+    var responseContext = new ResponseContext(res, req);
     responseContext.decorate(res);
 
     //crossroad url parsing
     crossroads.parse(path, [req, res]);
   }
 
-  static reverse(state, params = {}) {
+  static reverse(state, params = {}, request = null) {
+    let language = settings.DEFAULT_LANGUAGE;
+
+    // when a request is present set language
+    // with the current request language
+    if (request !== null) {
+      language = request.i18n.language;
+    }
+
+    // update the state with the current language
+    state = language + ':' + state;
+
     var url = _stateRouteMapping[state].interpolate(params); //eslint-disable-line no-shadow
+
     return `/${url}`;
   }
 
@@ -112,20 +131,72 @@ export class RouteUtils {
 
 export class BaseRouter {
   constructor(prefix = '') {
-    //find subRoutes
-    for (let rt of Object.keys(this.urlPatterns)) {
-      let rtObj = this.urlPatterns[rt];
-      if (rt !== '') {
-        rt = `${rt}/`;
+    // init the routing mapping
+    for (let item of Object.keys(this.urlPatterns)) {
+      let urlPattern = this.urlPatterns[item];
+
+      if (item !== '') {
+        item = `${item}/`;
       }
-      if (rtObj instanceof IncludeDefinition) {
-        //instantiate sub router
-        new rtObj.router(`${prefix}${rt}`); //eslint-disable-line new-cap, no-new
+
+      if (urlPattern instanceof IncludeDefinition) {
+        // init a sub router modules
+        new urlPattern.router(`${prefix}${item}`); //eslint-disable-line new-cap, no-new
       } else {
-        var rUrl = `${prefix}${rt}`;
-        _stateRouteMapping[rtObj.state] = crossroads.addRoute(rUrl, (...args) => { //eslint-disable-line no-loop-func
-          this.routeTo(rtObj, ...args);
-        });
+        // urlPattern is an array of urlDefinition one
+        // for each supported language
+        for (let urlDefinition of urlPattern) {
+          //console.log('urlDefinition', urlDefinition);
+
+          // language can be safety detect from first part
+          // of state
+          let language = urlDefinition.state.split(':')[0];
+          let routeUrl = `${language}/${prefix}${item}`;
+
+          // check if the current url keyword has been translated,
+          // if there is not a translation will be used the default routeUrl
+          // value
+          try {
+            let getTextFileValue = language.replace('-', '_');
+            let i18n = new Jed(require(`__locale_${getTextFileValue}`));
+            let i18nUrlSegments = `${prefix}${item}`.split('_i18n:');
+            let tmpRouteUrl = '';
+
+            //console.debug('Split', i18nUrlSegments);
+
+            for (let i18nUrlSegment of i18nUrlSegments) {
+              //console.log('i18nUrlSegment', i18nUrlSegment);
+
+              // skip the empty segment
+              if (i18nUrlSegment === '') {
+                continue;
+              }
+
+              let msgId = '_i18n:' + i18nUrlSegment.replace(/\/$/, '');
+
+              tmpRouteUrl = tmpRouteUrl + i18n.gettext(msgId) + '/';
+
+              //console.log('translate', `${msgId}`);
+              //console.log('tmpRouteUrl', `${tmpRouteUrl}`);
+            }
+
+            // add the current language
+            routeUrl = `${language}/${tmpRouteUrl}`;
+
+            // sanity check on /
+            if (!routeUrl.endsWith('/')) {
+              routeUrl = `${routeUrl}/`;
+            }
+
+            //console.log('routeUrl', `${routeUrl}`);
+          } catch (ex) {
+            console.warn(`The following error has occurred translating '${prefix}${item}': ${ex}`);
+          }
+
+          _stateRouteMapping[urlDefinition.state] = crossroads.addRoute(routeUrl, (...args) => { //eslint-disable-line no-loop-func
+            this.routeTo(urlDefinition, ...args);
+          });
+        }
       }
     }
   }
@@ -139,7 +210,7 @@ export class BaseRouter {
       }
     }
     if (runtime.isClient) {
-      //when client, set the current response object so we can control which controller can render the view
+      // when client, set the current response object so we can control which controller can render the view
       runtime.currentClientResponse = res;
     }
     Promise.all(midPromises).then(() => {

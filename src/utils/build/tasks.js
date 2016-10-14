@@ -12,7 +12,7 @@ import browserSync from 'browser-sync';
 import merge2 from 'merge2';
 import nconf from 'nconf';
 import fs from 'fs';
-import gettext from 'babel-jsxgettext';
+import gettext from 'outlinejs-babel-jsxgettext';
 import po2json from 'gulp-po2json';
 import del from 'del';
 import {stream as wiredep} from 'wiredep';
