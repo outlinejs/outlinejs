@@ -12,18 +12,24 @@ export default class {
   }
 
   set language(value) {
+    // patch language value with _ (separator used by gettext)
+    // instead of - (separator used by W3C)
+    let getTextFileValue = value.replace('-', '_');
+
     if (!dictionaries[value]) {
       try {
-        dictionaries[value] = new Jed(require(`__locale_${value}`));
+        dictionaries[value] = new Jed(require(`__locale_${getTextFileValue}`));
       } catch (ex) {
-        console.warn(`Language with code ${value} is not available`);
+        console.warn(`Language with code ${value} is not available, the following error has occurred: ${ex}`);
       }
     }
+
     this._language = value;
   }
 
   gettext(msgid) {
     var currentDictionary = dictionaries[this._language];
+
     if (currentDictionary) {
       return currentDictionary.gettext(msgid);
     }
