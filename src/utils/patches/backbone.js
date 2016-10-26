@@ -85,7 +85,7 @@ export function backboneSync(method, model, options) {
     }
 
     if (options.headers) {
-      params.headers = Object.assign(options.headers, params.headers);
+      params.headers = Object.assign(params.headers, options.headers);
     }
 
     if (params.method === 'GET') {
