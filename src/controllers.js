@@ -37,6 +37,10 @@ export class BaseController {
     return true;
   }
 
+  get serverSideRenderOnly() {
+    return false;
+  }
+
   getViewForRendering() {
     return this.view;
   }
@@ -52,7 +56,7 @@ export class BaseController {
     var View = this.getViewForRendering(); //eslint-disable-line
     // it's the root view, remove the child context request
     if (runtime.isClient) {
-      if (runtime.currentClientResponse === this.response) {
+      if (!this.serverSideRenderOnly && runtime.currentClientResponse === this.response) {
         this._viewInstance = ReactDOM.render(<View {...context} delegate={this} __request={this.request} __response={this.response} />, runtime.renderContainerObject);
       }
     } else {
