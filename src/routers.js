@@ -162,10 +162,10 @@ export class BaseRouter {
             let i18nUrlSegments = `${prefix}${item}`.split('_i18n:');
             let tmpRouteUrl = '';
 
-            console.log('Split', i18nUrlSegments);
+            //console.log('Split', i18nUrlSegments);
 
             for (let i18nUrlSegment of i18nUrlSegments) {
-              console.log('i18nUrlSegment', i18nUrlSegment);
+              //console.log('i18nUrlSegment', i18nUrlSegment);
 
               // skip the empty segment
               if (i18nUrlSegment === '') {
@@ -188,7 +188,7 @@ export class BaseRouter {
               routeUrl = `${routeUrl}/`;
             }
 
-            console.log('routeUrl', `${routeUrl}`);
+            //console.log('routeUrl', `${routeUrl}`);
           } catch (ex) {
             console.warn(`The following error has occurred translating '${prefix}${item}': ${ex}`);
           }
