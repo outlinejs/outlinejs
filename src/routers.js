@@ -162,7 +162,7 @@ export class BaseRouter {
             let i18nUrlSegments = `${prefix}${item}`.split('_i18n:');
             let tmpRouteUrl = '';
 
-            //console.debug('Split', i18nUrlSegments);
+            //console.log('Split', i18nUrlSegments);
 
             for (let i18nUrlSegment of i18nUrlSegments) {
               //console.log('i18nUrlSegment', i18nUrlSegment);
