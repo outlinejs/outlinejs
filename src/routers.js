@@ -101,8 +101,28 @@ export class RouteUtils {
     var responseContext = new ResponseContext(res, req);
     responseContext.decorate(res);
 
-    //crossroad url parsing
-    crossroads.parse(path, [req, res]);
+    //run the middleware
+    var middlewarePromises = [];
+
+    for (var middleware of runtime.middleware) {
+      //processRequest
+      if (middleware.processRequest) {
+        middlewarePromises.push(middleware.processRequest(req, res));
+      }
+
+      //processResponse
+      if (middleware.processResponse) {
+        middlewarePromises.push(middleware.processResponse(req, res));
+      }
+    }
+
+    Promise.all(middlewarePromises).then(() => {
+      //crossroad parse a string input and dispatch matched signal of the first route
+      //that matches the request
+      crossroads.parse(path, [req, res]);
+    }, (error) => {
+      res.error(error);
+    });
   }
 
   static reverse(state, params = {}, request = null) {
@@ -203,43 +223,38 @@ export class BaseRouter {
 
   routeTo(urlDef, req, res, ...args) {
     var Controller = urlDef.controller;
-    var midPromises = [];
-    for (var mid of runtime.middleware) {
-      if (mid.preControllerInit) {
-        midPromises.push(mid.preControllerInit(req, res));
-      }
-    }
+
     if (runtime.isClient) {
       // when client, set the current response object so we can control which controller can render the view
       runtime.currentClientResponse = res;
     }
-    Promise.all(midPromises).then(() => {
-      if (Controller.loginRequired && !req.user) {
-        try {
-          var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE);
-        } catch (ex) {
-          res.error(new Error(`State ${settings.LOGIN_STATE} is undefined`));
-          return;
-        }
-        var nextUrl = encodeURIComponent(req.absoluteUrl);
-        loginUrl = `${loginUrl}?next-url=${nextUrl}`;
-        res.navigate(loginUrl);
+
+    if (Controller.loginRequired && !req.user) {
+      try {
+        var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE);
+      } catch (ex) {
+        res.error(new Error(`State ${settings.LOGIN_STATE} is undefined`));
         return;
       }
+      var nextUrl = encodeURIComponent(req.absoluteUrl);
+      loginUrl = `${loginUrl}?next-url=${nextUrl}`;
+      res.navigate(loginUrl);
+      return;
+    }
 
-      req.state = urlDef.state;
-      let controller = new Controller(req, res);
-      if (runtime.isClient) {
-        controller.reconcileWithServer();
-      }
-      try {
-        controller.init(...args);
-      } catch (ex) {
-        res.error(ex);
-      }
-    }, (error) => {
-      res.error(error);
-    });
+    req.state = urlDef.state;
+
+    let controller = new Controller(req, res);
+
+    if (runtime.isClient) {
+      controller.reconcileWithServer();
+    }
+
+    try {
+      controller.init(...args);
+    } catch (ex) {
+      res.error(ex);
+    }
   }
 
   get urlPatterns() {
