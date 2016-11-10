@@ -1,6 +1,8 @@
 import ReactDOM from 'react-dom';
 import ReactDOMServer from 'react-dom/server';
-import React from 'react'; //eslint-disable-line no-unused-vars
+import React from 'react'; // eslint-disable-line no-unused-vars
+import Helmet from 'react-helmet';
+
 import { runtime } from './contexts';
 
 let safeStringifyRegExScript = new RegExp('<\/script', 'g');
@@ -53,7 +55,8 @@ export class BaseController {
   }
 
   render(context = {}) {
-    var View = this.getViewForRendering(); //eslint-disable-line
+    var View = this.getViewForRendering(); // eslint-disable-line
+
     // it's the root view, remove the child context request
     if (runtime.isClient) {
       if (!this.serverSideRenderOnly && runtime.currentClientResponse === this.response) {
@@ -61,21 +64,30 @@ export class BaseController {
       }
     } else {
       try {
-        //render react component
+        // render react component
         var html = runtime.renderContainerObject.replace(runtime.serverRenderContainerPattern, (match, pre, inside, post) => {
           return pre + ReactDOMServer.renderToString(<View {...context} delegate={this} __request={this.request} __response={this.response} />) + post;
         });
-        //render react component props
+
+        // render react component props
         var propScript = ReactDOMServer.renderToStaticMarkup(React.DOM.script({
           dangerouslySetInnerHTML: {
             __html: `var VIEW_PROPS = ${safeStringify(context)};`
           }
         }));
         html = html.replace('<head>', `<head>${propScript}`);
-        //output to http response
+
+        let head = Helmet.rewind();
+
+        html = html.replace('<html>', `<html ${head.htmlAttributes.toString()}>`);
+        html = html.replace('<head>', `<head>${head.meta.toString()}`);
+        html = html.replace('<head>', `<head>${head.title.toString()}`);
+
+        // output to http response
         this.response.writeHead(200, {'Content-Type': 'text/html'});
         this.response.end(html);
       } catch (ex) {
+        console.info(ex);
         this.response.error(ex);
       }
     }
@@ -106,6 +118,7 @@ export class BaseLayoutController extends BaseController {
 
   render(context = {}) {
     var mergedContext = {};
+
     mergedContext.contentProps = context;
     mergedContext.content = this.view;
     super.render(mergedContext);

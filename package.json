@@ -69,6 +69,7 @@
     "phantomic": "^1.4.0",
     "react": "^0.14.5",
     "react-dom": "^0.14.5",
+    "react-helmet": "^3.2.1",
     "remarkable": "^1.7.1",
     "sprintf-js": "^1.0.3",
     "vinyl-buffer": "^1.0.0",
