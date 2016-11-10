@@ -116,7 +116,7 @@ export default class {
     return settings.DEFAULT_LANGUAGE;
   }
 
-  preControllerInit(request, response) {
+  processRequest(request) {
     // define strategies priority
     var availableStrategies = [this.urlStrategy, this.qsStrategy, this.cookieStrategy, this.headerStrategy, this.defaultStrategy];
 
@@ -131,13 +131,20 @@ export default class {
         if (strategyResult !== null) {
           request.language = strategyResult;
 
-          if (runtime.isServer) {
-            response.setHeader('Content-Language', strategyResult);
-            response.setHeader('Set-Cookie', ['language=' + strategyResult + '; Path=/']);
-          }
-
           break;
         }
+      }
+
+      resolve();
+    });
+  }
+
+  processResponse(request, response) {
+    return new Promise((resolve) => {
+
+      if (runtime.isServer) {
+        response.setHeader('Content-Language', request.language);
+        response.setHeader('Set-Cookie', ['language=' + request.language + '; Path=/']);
       }
 
       resolve();
