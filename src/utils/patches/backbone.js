@@ -30,7 +30,7 @@ function parseLinkHeader(link) {
         let page = 1;
 
         // check if page parameter exist
-        if (linkParam.match(/page=(\d+)/gi)) {
+        if (linkValue.match(/page=(\d+)/gi)) {
           page = linkValue.replace(/.*page=(\d+).*/gi, '$1');
         }
 
@@ -45,7 +45,7 @@ function parseLinkHeader(link) {
         let page = 1;
 
         // check if page parameter exist
-        if (linkParam.match(/page=(\d+)/gi)) {
+        if (linkValue.match(/page=(\d+)/gi)) {
           page = linkValue.replace(/.*page=(\d+).*/gi, '$1');
         }
 
