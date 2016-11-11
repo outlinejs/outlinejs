@@ -89,7 +89,6 @@ export class BaseController {
         this.response.writeHead(200, {'Content-Type': 'text/html'});
         this.response.end(html);
       } catch (ex) {
-        console.info(ex);
         this.response.error(ex);
       }
     }
