@@ -27,18 +27,32 @@ function parseLinkHeader(link) {
         linkValue.split(';')[1] : '';
 
       if (linkParam.match(/rel="next"/gi)) {
+        let page = 1;
+
+        // check if page parameter exist
+        if (linkParam.match(/page=(\d+)/gi)) {
+          page = linkValue.replace(/.*page=(\d+).*/gi, '$1');
+        }
+
         hasNext = true;
         next = {
           url: linkValue.match(/<(.*?)>/gi)[0],
-          page: linkValue.replace(/.*page=(\d+).*/gi, '$1')
+          page: page
         };
       }
 
       if (linkParam.match(/rel="prev"/gi)) {
+        let page = 1;
+
+        // check if page parameter exist
+        if (linkParam.match(/page=(\d+)/gi)) {
+          page = linkValue.replace(/.*page=(\d+).*/gi, '$1');
+        }
+
         hasPrev = true;
         prev = {
           url: linkValue.match(/<(.*?)>/gi)[0],
-          page: linkValue.replace(/.*page=(\d+).*/gi, '$1')
+          page: page
         };
       }
     });

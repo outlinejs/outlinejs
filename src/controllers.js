@@ -80,14 +80,15 @@ export class BaseController {
         let head = Helmet.rewind();
 
         html = html.replace('<html>', `<html ${head.htmlAttributes.toString()}>`);
-        html = html.replace('<head>', `<head>${head.meta.toString()}`);
         html = html.replace('<head>', `<head>${head.title.toString()}`);
+        html = html.replace('<head>', `<head>${head.meta.toString()}`);
+        html = html.replace('<head>', `<head>${head.link.toString()}`);
+        html = html.replace('<head>', `<head>${head.noscript.toString()}`);
 
         // output to http response
         this.response.writeHead(200, {'Content-Type': 'text/html'});
         this.response.end(html);
       } catch (ex) {
-        console.info(ex);
         this.response.error(ex);
       }
     }
