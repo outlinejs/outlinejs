@@ -92,7 +92,7 @@ export function backboneSync(method, model, options) {
       }
     }
 
-    if (options.data == null && model && (method === 'create' || method === 'update' || method === 'patch')) {
+    if (model && (method === 'create' || method === 'update' || method === 'patch')) {
       params.headers['Content-Type'] = 'application/json';
       bodyData = JSON.stringify(options.attrs || model.toJSON(options));
       params.headers['Content-Length'] = Buffer.byteLength(bodyData);
@@ -102,7 +102,7 @@ export function backboneSync(method, model, options) {
       params.headers = Object.assign(params.headers, options.headers);
     }
 
-    if (params.method === 'GET') {
+    if (options.data !== null) {
       qs = querystring.stringify(options.data);
     }
 
