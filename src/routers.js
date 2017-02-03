@@ -231,7 +231,7 @@ export class BaseRouter {
 
     if (Controller.loginRequired && !req.user) {
       try {
-        var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE);
+        var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE, null, req);
       } catch (ex) {
         res.error(new Error(`State ${settings.LOGIN_STATE} is undefined`));
         return;
