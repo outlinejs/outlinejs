@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
+    "crossroads": "^0.12.2",
+    "hasher": "^1.2.0",
+    "html5-history-api": "^4.2.7",
     "@outlinejs/contexts": "^3.0.0",
     "@outlinejs/routers": "^3.0.0"
   }

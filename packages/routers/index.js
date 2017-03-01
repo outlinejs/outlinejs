@@ -47,52 +47,6 @@ export function include(router) {
 }
 
 export class RouteUtils {
-  static listen(routerClass) {
-    new routerClass(); //eslint-disable-line no-unused-vars, new-cap, no-new
-    if (runtime.isClient) {
-      RouteUtils._listenClient();
-    } else {
-      RouteUtils._listenServer();
-    }
-  }
-
-  static _listenServer() {
-    var http = require('http');
-    var urlModule = require('url');
-    var proxyServer = '0.0.0.0';//process.env.server || '0.0.0.0';
-    var proxyPort = 1337;//parseInt(process.env.port) || 1337;
-    crossroads.ignoreState = true;
-    crossroads.bypassed.add((req, res) => {
-      res.writeHead(404, {'Content-Type': 'text/html'});
-      res.end('<html><body><h1>HTTP 404 - Page Not Found</h1><hr/><p>OutlineJS Server</p></body></html>');
-    });
-    http.createServer((req, res) => {
-      var requestedUrl = urlModule.parse(req.url).pathname;
-      RouteUtils.parseUrl(requestedUrl, req, res);
-    }).listen(proxyPort, proxyServer);
-  }
-
-  static _listenClient() {
-    if (settings.ROUTING_USE_FRAGMENT) {
-      var hasher = require('hasher');
-      var parseHash = (fragment) => {
-        RouteUtils.parseUrl(fragment);
-      };
-      hasher.prependHash = '';
-      hasher.initialized.add(parseHash);
-      hasher.changed.add(parseHash);
-      hasher.init();
-    } else {
-      require('html5-history-api');
-      var location = window.history.location || window.location;
-      var eventDef = window.addEventListener ? ['addEventListener', ''] : ['attachEvent', 'on'];
-      window[eventDef[0]](`${eventDef[1]}popstate`, () => {
-        RouteUtils.parseUrl(location.pathname);
-      }, false);
-      RouteUtils.parseUrl(location.pathname);
-    }
-  }
-
   static parseUrl(path, req = {}, res = {}) {
     // add request context props to request
     var requestContext = new RequestContext(req);
