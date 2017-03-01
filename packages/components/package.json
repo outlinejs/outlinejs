@@ -1,0 +1,27 @@
+{
+  "name": "@outlinejs/components",
+  "version": "3.0.0",
+  "description": "OutlineJS Components Collection",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/outlinejs/outlinejs.git"
+  },
+  "author": "OutlineJS Team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/outlinejs/outlinejs/issues"
+  },
+  "homepage": "https://github.com/outlinejs/outlinejs#readme",
+  "peerDependencies": {
+    "react": "^15.4.2"
+  },
+  "dependencies": {
+    "react-helmet": "^4.0.0",
+    "remarkable": "^1.7.1",
+    "@outlinejs/routers": "^3.0.0"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@outlinejs/contexts",
+  "version": "3.0.0",
+  "description": "OutlineJS Contexts (Request/Response/Runtime) Package",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/outlinejs/outlinejs.git"
+  },
+  "author": "OutlineJS Team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/outlinejs/outlinejs/issues"
+  },
+  "homepage": "https://github.com/outlinejs/outlinejs#readme",
+  "dependencies": {
+    "hasher": "^1.2.0",
+    "html5-history-api": "^4.2.7",
+    "@outlinejs/translation": "^3.0.0",
+    "@outlinejs/routers": "^3.0.0"
+  }
+}
