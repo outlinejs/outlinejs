@@ -191,7 +191,7 @@ export class BaseRouter {
         return;
       }
       var nextUrl = encodeURIComponent(req.url.href);
-      loginUrl = `${loginUrl}?next-url=${nextUrl}`;
+      loginUrl = `${loginUrl}?next=${nextUrl}`;
       res.navigate(loginUrl);
       return;
     }
