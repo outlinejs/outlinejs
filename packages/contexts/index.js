@@ -97,15 +97,136 @@ export class ResponseContext extends DecorableContext {
 
 }
 
+class Url {
+  constructor(request) {
+    this._request = request;
+    this._clientUrl = null;
+    this._serverUrl = null;
+
+    if (runtime.isClient) {
+      // class URL is not supported on IE / EDGE ...
+      // so use old location
+      require('html5-history-api');
+
+      this._clientUrl = window.history.location || window.location;
+    } else {
+      let protocol = this._request.connection.encrypted || this._request.headers['X-Forwarded-Proto'] === 'https' ?
+        'https:' : 'http:';
+
+      this._serverUrl = new URL(`${protocol}//${this._request.headers.host.replace(/:80$/, '')}${this._request.url}`);
+    }
+  }
+
+  get href() {
+    if (runtime.isClient) {
+      return this._clientUrl.href;
+    } else {
+      return this._serverUrl.href;
+    }
+  }
+
+  get protocol() {
+    if (runtime.isClient) {
+      return this._clientUrl.protocol;
+    } else {
+      return this._serverUrl.protocol;
+    }
+  }
+
+  get username() {
+    if (runtime.isClient) {
+      return this._clientUrl.username;
+    } else {
+      return this._serverUrl.username;
+    }
+  }
+
+  get password() {
+    if (runtime.isClient) {
+      return this._clientUrl.password;
+    } else {
+      return this._serverUrl.password;
+    }
+  }
+
+  get hostname() {
+    if (runtime.isClient) {
+      return this._clientUrl.hostname;
+    } else {
+      return this._serverUrl.hostname;
+    }
+  }
+
+  get port() {
+    if (runtime.isClient) {
+      return this._clientUrl.port;
+    } else {
+      return this._serverUrl.port;
+    }
+  }
+
+  get origin() {
+    if (runtime.isClient) {
+      return this._clientUrl.origin;
+    } else {
+      return this._serverUrl.origin;
+    }
+  }
+
+  get pathname() {
+    if (runtime.isClient) {
+      return this._clientUrl.pathname;
+    } else {
+      return this._serverUrl.pathname;
+    }
+  }
+
+  get search() {
+    if (runtime.isClient) {
+      return this._clientUrl.search;
+    } else {
+      return this._serverUrl.search;
+    }
+  }
+
+  get query() {
+    if (runtime.isClient) {
+      let qs = require('qs');
+
+      return qs.parse(this._clientUrl.query);
+    } else {
+      return this._serverUrl.query;
+    }
+  }
+
+  get path() {
+    if (runtime.isClient) {
+      return this._clientUrl.pathname + this._clientUrl.search;
+    } else {
+      return this._serverUrl.path;
+    }
+  }
+
+  get hash() {
+    if (runtime.isClient) {
+      return this._clientUrl.hash;
+    } else {
+      return this._serverUrl.hash;
+    }
+  }
+}
+
 export class RequestContext extends DecorableContext {
   constructor(request) {
     super();
+
     this._user = null;
     this._state = null;
     this._language = null;
     this._i18n = new Translation();
     this._request = request;
     this._query = null;
+    this._url = new Url(request);
   }
 
   get user() {
@@ -117,26 +238,11 @@ export class RequestContext extends DecorableContext {
   }
 
   get isSecure() {
-    if (runtime.isClient) {
-      require('html5-history-api');
-      let location = window.history.location || window.location;
-      return location.href.indexOf('https://') === 0;
-    } else {
-      if (this._request.connection.encrypted || this._request.headers['X-Forwarded-Proto'] === 'https') {
-        return true;
-      }
-      return false;
-    }
+    return this._url.protocol === 'https:';
   }
 
-  get absoluteUrl() {
-    if (runtime.isClient) {
-      require('html5-history-api');
-      let location = window.history.location || window.location;
-      return location.href;
-    } else {
-      return `${this.isSecure ? 'https' : 'http'}://${this._request.headers.host.replace(/:80$/, '')}${this._request.url}`;
-    }
+  get url() {
+    return this._url;
   }
 
   get state() {
@@ -158,13 +264,6 @@ export class RequestContext extends DecorableContext {
 
   get i18n() {
     return this._i18n;
-  }
-
-  get query() {
-    if (!this._query) {
-      this._query = querystring.decode(url.parse(this.absoluteUrl).query);
-    }
-    return this._query;
   }
 
   isState(state) {
