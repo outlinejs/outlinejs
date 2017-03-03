@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/boot",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "description": "OutlineJS Boot Package",
   "main": "dist/index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "crossroads": "^0.12.2",
     "hasher": "^1.2.0",
     "html5-history-api": "^4.2.7",
-    "@outlinejs/contexts": "^3.0.7",
+    "@outlinejs/contexts": "^3.0.8",
     "@outlinejs/conf": "^3.0.3"
   },
   "publishConfig": {
