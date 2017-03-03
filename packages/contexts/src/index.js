@@ -53,8 +53,6 @@ export class ResponseContext extends DecorableContext {
     try {
       url = RouteUtils.reverse(to, this.request, params);
     } catch (ex) {
-      console.error(ex);
-
       url = to;
 
       if (runtime.isClient) {
@@ -94,15 +92,201 @@ export class ResponseContext extends DecorableContext {
 
 }
 
+/**
+ * Class to parse and convert a string url (https://user:password@github.com:8000/outlinejs/outlinejs?q=string#hash)
+ * from current request in structured components.
+ */
+class Url {
+  constructor(request) {
+    this._request = request;
+    this._clientUrl = null;
+    this._serverUrl = null;
+
+    if (runtime.isClient) {
+      // class URL is not supported on IE / EDGE ...
+      // so use old location
+      require('html5-history-api');
+
+      this._clientUrl = window.history.location || window.location;
+    } else {
+      let protocol = this._request.connection.encrypted || this._request.headers['X-Forwarded-Proto'] === 'https' ?
+        'https:' : 'http:';
+
+      // class URL is Experimental ...
+      // so use old url.parse
+      this._serverUrl = url.parse(`${protocol}//${this._request.headers.host.replace(/:80$/, '')}${this._request.url}`);
+    }
+  }
+
+  /**
+   * A string containing the entire URL.
+   * For example: 'https://xpicio:123456@github.com:8000/outlinejs/outlinejs?q=string#hash'
+   */
+  get href() {
+    if (runtime.isClient) {
+      return this._clientUrl.href;
+    } else {
+      return this._serverUrl.href;
+    }
+  }
+
+  /**
+   * The protocol string identifies the URL's lower-cased protocol scheme.
+   * For example: 'https:'
+   */
+  get protocol() {
+    if (runtime.isClient) {
+      return this._clientUrl.protocol;
+    } else {
+      return this._serverUrl.protocol;
+    }
+  }
+
+  /**
+   * A string containing the username specified before the domain name.
+   * For example: 'xpicio:'
+   */
+  get username() {
+    if (runtime.isClient) {
+      return this._clientUrl.username;
+    } else {
+      let username = '';
+
+      if (this._serverUrl.username) {
+        username = this._serverUrl.username.split(':')[0];
+      }
+
+      return username || '';
+    }
+  }
+
+  /**
+   * A string containing the password specified before the domain name.
+   * For example: '123456:'
+   */
+  get password() {
+    if (runtime.isClient) {
+      return this._clientUrl.password;
+    } else {
+      let password = '';
+
+      if (this._serverUrl.password) {
+        password = this._serverUrl.password.split(':')[1];
+      }
+
+      return password || '';
+    }
+  }
+
+  /**
+   * The hostname property is the lower-cased host name portion of the host component without the port included.
+   * For example: 'github.com'
+   */
+  get hostname() {
+    if (runtime.isClient) {
+      return this._clientUrl.hostname;
+    } else {
+      return this._serverUrl.hostname;
+    }
+  }
+
+  /**
+   * A string containing the port portion of the host component.
+   * For example: '8000'
+   */
+  get port() {
+    if (runtime.isClient) {
+      return this._clientUrl.port;
+    } else {
+      return this._serverUrl.port;
+    }
+  }
+
+  /**
+   * A string containing the canonical form of the origin of the specific url.
+   * For example: 'https://github.com'
+   */
+  get origin() {
+    if (runtime.isClient) {
+      return this._clientUrl.origin;
+    } else {
+      return `${this._serverUrl.protocol}//${this._serverUrl.hostname}`;
+    }
+  }
+
+  /**
+   * A string containing an initial '/' followed by the path of the url.
+   * For example: '/outlinejs/outlinejs'
+   */
+  get pathname() {
+    if (runtime.isClient) {
+      return this._clientUrl.pathname;
+    } else {
+      return this._serverUrl.pathname;
+    }
+  }
+
+  /**
+   * A string containing a '?' followed by the parameters of the url, also known as "querystring".
+   * For example: '?q=string'
+   */
+  get search() {
+    if (runtime.isClient) {
+      return this._clientUrl.search;
+    } else {
+      return this._serverUrl.search;
+    }
+  }
+
+  /**
+   * An object containing the parsed parameters of the url.
+   * For example: '{ q: 'string' }'
+   */
+  get query() {
+    let qs = require('qs');
+
+    if (runtime.isClient) {
+      return qs.parse(this._clientUrl.search);
+    } else {
+      return qs.parse(this._serverUrl.query);
+    }
+  }
+
+  /**
+   * A string containing the path property that is a concatenation of the pathname and search components.
+   * For example: '/outlinejs/outlinejs?q=string'
+   */
+  get path() {
+    if (runtime.isClient) {
+      return `${this._clientUrl.pathname}${this._clientUrl.search}`;
+    } else {
+      return this._serverUrl.path;
+    }
+  }
+
+  /**
+   * A string containing a '#' followed by the fragment identifier of the url.
+   */
+  get hash() {
+    if (runtime.isClient) {
+      return this._clientUrl.hash;
+    } else {
+      return this._serverUrl.hash;
+    }
+  }
+}
+
 export class RequestContext extends DecorableContext {
   constructor(request) {
     super();
+
     this._user = null;
     this._state = null;
     this._language = settings.DEFAULT_LANGUAGE;
     this._i18n = new Translation();
     this._request = request;
     this._query = null;
+    this._url = new Url(request);
   }
 
   get user() {
@@ -114,26 +298,11 @@ export class RequestContext extends DecorableContext {
   }
 
   get isSecure() {
-    if (runtime.isClient) {
-      require('html5-history-api');
-      let location = window.history.location || window.location;
-      return location.href.indexOf('https://') === 0;
-    } else {
-      if (this._request.connection.encrypted || this._request.headers['X-Forwarded-Proto'] === 'https') {
-        return true;
-      }
-      return false;
-    }
+    return this._url.protocol === 'https:';
   }
 
-  get absoluteUrl() {
-    if (runtime.isClient) {
-      require('html5-history-api');
-      let location = window.history.location || window.location;
-      return location.href;
-    } else {
-      return `${this.isSecure ? 'https' : 'http'}://${this._request.headers.host.replace(/:80$/, '')}${this._request.url}`;
-    }
+  get url() {
+    return this._url;
   }
 
   get state() {
@@ -155,13 +324,6 @@ export class RequestContext extends DecorableContext {
 
   get i18n() {
     return this._i18n;
-  }
-
-  get query() {
-    if (!this._query) {
-      this._query = querystring.decode(url.parse(this.absoluteUrl).query);
-    }
-    return this._query;
   }
 
   isState(state) {
