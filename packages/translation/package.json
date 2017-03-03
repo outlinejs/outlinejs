@@ -18,5 +18,8 @@
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
     "jed": "^1.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

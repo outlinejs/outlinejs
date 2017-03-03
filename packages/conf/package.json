@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/outlinejs/outlinejs/issues"
   },
-  "homepage": "https://github.com/outlinejs/outlinejs#readme"
+  "homepage": "https://github.com/outlinejs/outlinejs#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }

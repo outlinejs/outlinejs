@@ -18,5 +18,8 @@
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
     "@outlinejs/conf": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
