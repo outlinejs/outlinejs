@@ -1,107 +1,8 @@
 import crossroads from 'crossroads';
-
 import { Jed } from 'jed';
-import { RequestContext, ResponseContext, runtime } from '@outlinejs/contexts';
-import { settings } from '@outlinejs/contexts';
-
-let _stateRouteMapping = {};
-
-class UrlDefinition {
-  constructor(state, controller) {
-    this._state = state;
-    this._controller = controller;
-  }
-
-  get state() {
-    return this._state;
-  }
-
-  get controller() {
-    return this._controller;
-  }
-}
-
-class IncludeDefinition {
-  constructor(router) {
-    this._router = router;
-  }
-
-  get router() {
-    return this._router;
-  }
-}
-
-export function i18nUrl(state, controller) {
-  let languages = settings.LANGUAGES;
-  let urlDefinition = [];
-
-  languages.forEach(function (language) {
-    urlDefinition.push(new UrlDefinition(language + ':' + state, controller, true));
-  });
-
-  return urlDefinition;
-}
-
-export function include(router) {
-  return new IncludeDefinition(router);
-}
-
-export class RouteUtils {
-  static parseUrl(path, req = {}, res = {}) {
-    // add request context props to request
-    var requestContext = new RequestContext(req);
-    requestContext.decorate(req);
-
-    var responseContext = new ResponseContext(res, req);
-    responseContext.decorate(res);
-
-    //run the middleware
-    var middlewarePromises = [];
-
-    for (var middleware of runtime.middleware) {
-      //processRequest
-      if (middleware.processRequest) {
-        middlewarePromises.push(middleware.processRequest(req, res));
-      }
-
-      //processResponse
-      if (middleware.processResponse) {
-        middlewarePromises.push(middleware.processResponse(req, res));
-      }
-    }
-
-    Promise.all(middlewarePromises).then(() => {
-      //crossroad parse a string input and dispatch matched signal of the first route
-      //that matches the request
-      crossroads.parse(path, [req, res]);
-    }, (error) => {
-      res.error(error);
-    });
-  }
-
-  static reverse(state, params = {}, request = null) {
-    let language = settings.DEFAULT_LANGUAGE;
-
-    // when a request is present set language
-    // with the current request language
-    if (request !== null) {
-      language = request.i18n.language;
-    }
-
-    // update the state with the current language
-    state = language + ':' + state;
-
-    var url = _stateRouteMapping[state].interpolate(params); //eslint-disable-line no-shadow
-
-    return `/${url}`;
-  }
-
-  static activeCssClass(request, state, cssClass = 'active') {
-    if (request && request.isState(state)) {
-      return cssClass;
-    }
-  }
-}
+import { runtime } from '@outlinejs/contexts';
+import { settings } from '@outlinejs/conf';
+import { IncludeDefinition, RouteUtils } from '@outlinejs/route-utils';
 
 export class BaseRouter {
   constructor(prefix = '') {
@@ -167,8 +68,12 @@ export class BaseRouter {
             console.warn(`The following error has occurred translating '${prefix}${item}': ${ex}`);
           }
 
-          _stateRouteMapping[urlDefinition.state] = crossroads.addRoute(routeUrl, (...args) => { //eslint-disable-line no-loop-func
+          let crossroadsRoute = crossroads.addRoute(routeUrl, (...args) => { //eslint-disable-line no-loop-func
             this.routeTo(urlDefinition, ...args);
+          });
+
+          RouteUtils.mapRoute(urlDefinition.state, (params) => {
+            crossroadsRoute.interpolate(params);
           });
         }
       }
@@ -176,7 +81,7 @@ export class BaseRouter {
   }
 
   routeTo(urlDef, req, res, ...args) {
-    var Controller = urlDef.controller;
+    let Controller = urlDef.controller;
 
     if (runtime.isClient) {
       // when client, set the current response object so we can control which controller can render the view
@@ -185,15 +90,13 @@ export class BaseRouter {
 
     if (Controller.loginRequired && !req.user) {
       try {
-        var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE, null, req);
+        let loginUrl = RouteUtils.reverse(settings.LOGIN_STATE, req, null);
+        let nextUrl = encodeURIComponent(req.absoluteUrl);
+        loginUrl = `${loginUrl}?next-url=${nextUrl}`;
+        res.navigate(loginUrl);
       } catch (ex) {
         res.error(new Error(`State ${settings.LOGIN_STATE} is undefined`));
-        return;
       }
-      var nextUrl = encodeURIComponent(req.absoluteUrl);
-      loginUrl = `${loginUrl}?next-url=${nextUrl}`;
-      res.navigate(loginUrl);
-      return;
     }
 
     req.state = urlDef.state;

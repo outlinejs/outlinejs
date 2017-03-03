@@ -1,6 +1,8 @@
+export let settings = null;
+
 export class BaseSettings {
   get MIDDLEWARE() {
-    return [require('@outlinejs/middleware').locale];
+    return [];
   }
 
   get LOGIN_STATE() {
@@ -46,4 +48,8 @@ export class Env {
   static get(value) {
     return _env[value];
   }
+}
+
+export function _init(settingsClass) {
+  settings = new settingsClass(); //eslint-disable-line new-cap
 }

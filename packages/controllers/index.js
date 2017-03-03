@@ -2,7 +2,6 @@ import ReactDOM from 'react-dom';
 import ReactDOMServer from 'react-dom/server';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import Helmet from 'react-helmet';
-
 import { runtime } from '@outlinejs/contexts';
 
 let safeStringifyRegExScript = new RegExp('<\/script', 'g');
@@ -55,7 +54,7 @@ export class BaseController {
   }
 
   render(context = {}) {
-    var View = this.getViewForRendering(); // eslint-disable-line
+    let View = this.getViewForRendering(); // eslint-disable-line
 
     // it's the root view, remove the child context request
     if (runtime.isClient) {
@@ -65,12 +64,12 @@ export class BaseController {
     } else {
       try {
         // render react component
-        var html = runtime.renderContainerObject.replace(runtime.serverRenderContainerPattern, (match, pre, inside, post) => {
+        let html = runtime.renderContainerObject.replace(runtime.serverRenderContainerPattern, (match, pre, inside, post) => {
           return pre + ReactDOMServer.renderToString(<View {...context} delegate={this} __request={this.request} __response={this.response} />) + post;
         });
 
         // render react component props
-        var propScript = ReactDOMServer.renderToStaticMarkup(React.DOM.script({
+        let propScript = ReactDOMServer.renderToStaticMarkup(React.DOM.script({
           dangerouslySetInnerHTML: {
             __html: `var VIEW_PROPS = ${safeStringify(context)};`
           }
@@ -118,7 +117,7 @@ export class BaseLayoutController extends BaseController {
   }
 
   render(context = {}) {
-    var mergedContext = {};
+    let mergedContext = {};
 
     mergedContext.contentProps = context;
     mergedContext.content = this.view;

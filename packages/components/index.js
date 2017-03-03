@@ -1,7 +1,7 @@
 import React from 'react';
 import Remarkable from 'remarkable';
 import Helmet from 'react-helmet';
-import { RouteUtils } from '@outlinejs/routers';
+import { RouteUtils } from '@outlinejs/route-utils';
 
 
 export class BaseComponent extends React.Component {
@@ -105,7 +105,7 @@ export class Link extends BaseComponent {
     let props = {};
     let { state, params, className, activeClassName, children, style, title } = this.props;
 
-    props.href = RouteUtils.reverse(state, params, this.request);
+    props.href = RouteUtils.reverse(state, this.request, params);
 
     if (className) {
       props.className = className;

@@ -1,4 +1,5 @@
-import {runtime, settings} from '@outlinejs/contexts';
+import {runtime} from '@outlinejs/contexts';
+import {settings} from '@outlinejs/conf';
 
 export default class {
   urlStrategy(request) {

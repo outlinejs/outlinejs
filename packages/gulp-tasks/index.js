@@ -20,7 +20,7 @@ import mocaccino from 'mocaccino';
 import glob from 'glob';
 import phantomic from 'phantomic';
 import httpProxy from 'http-proxy';
-import insertGlobals from 'insert-module-globals';
+// import insertGlobals from 'insert-module-globals';
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;

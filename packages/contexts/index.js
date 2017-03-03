@@ -1,9 +1,10 @@
 import querystring from 'querystring';
 import url from 'url';
 import Translation from '@outlinejs/translation';
+import {settings} from '@outlinejs/conf';
+import {RouteUtils} from '@outlinejs/route-utils';
 
 export let runtime = null;
-export let settings = null;
 
 export class DecorableContext {
   decorate(component) {
@@ -46,18 +47,12 @@ export class ResponseContext extends DecorableContext {
     return this._request;
   }
 
-  get routeUtils() {
-    return this._router.RouteUtils;
-  }
-
   navigate(to, params = {}) {
     let url; //eslint-disable-line no-shadow
 
     try {
-      url = this.routeUtils.reverse(to, params, this.request);
+      url = RouteUtils.reverse(to, this.request, params);
     } catch (ex) {
-      console.error(ex);
-
       url = to;
 
       if (runtime.isClient) {
@@ -77,7 +72,7 @@ export class ResponseContext extends DecorableContext {
         } else {
           let history = require('html5-history-api');
           history.pushState(null, null, url);
-          this.routeUtils.parseUrl(url);
+          window.navigateEventEmitter.emit('navigate', url);
         }
       }
     } else {
@@ -102,7 +97,7 @@ export class RequestContext extends DecorableContext {
     super();
     this._user = null;
     this._state = null;
-    this._language = null;
+    this._language = settings.DEFAULT_LANGUAGE;
     this._i18n = new Translation();
     this._request = request;
     this._query = null;
@@ -243,7 +238,6 @@ class RuntimeContext {
   }
 }
 
-export function _initContexts(settingsClass, containerNodeId) {
-  settings = new settingsClass(); //eslint-disable-line new-cap
+export function _init(containerNodeId) {
   runtime = new RuntimeContext(containerNodeId);
 }

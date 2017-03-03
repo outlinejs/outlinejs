@@ -18,6 +18,7 @@
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
     "@outlinejs/contexts": "^3.0.0",
+    "@outlinejs/conf": "^3.0.0",
     "accept-language": "^3.0.15",
     "cookie": "^0.3.1",
     "js-cookie": "^2.1.3"
