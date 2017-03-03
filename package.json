@@ -23,7 +23,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "babel src --out-dir lib",
+    "compile": "for d in packages/*/; do babel \"$d\"src --out-dir \"$d\"dist; done",
     "prepublish": "npm run compile"
   }
 }
