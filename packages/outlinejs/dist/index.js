@@ -3,11 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.views = exports.translation = exports.routers = exports.routeUtils = exports.middleware = exports.gulpTasks = exports.controllers = exports.contexts = exports.conf = exports.components = exports.boot = undefined;
+exports.views = exports.translation = exports.routers = exports.routeUtils = exports.middleware = exports.controllers = exports.contexts = exports.conf = exports.components = exports.Boot = undefined;
 
 var _boot = require('@outlinejs/boot');
 
-var boot = _interopRequireWildcard(_boot);
+var _boot2 = _interopRequireDefault(_boot);
 
 var _components = require('@outlinejs/components');
 
@@ -24,10 +24,6 @@ var contexts = _interopRequireWildcard(_contexts);
 var _controllers = require('@outlinejs/controllers');
 
 var controllers = _interopRequireWildcard(_controllers);
-
-var _gulpTasks = require('@outlinejs/gulp-tasks');
-
-var gulpTasks = _interopRequireWildcard(_gulpTasks);
 
 var _middleware = require('@outlinejs/middleware');
 
@@ -51,12 +47,13 @@ var views = _interopRequireWildcard(_views);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-exports.boot = boot;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.Boot = _boot2.default;
 exports.components = components;
 exports.conf = conf;
 exports.contexts = contexts;
 exports.controllers = controllers;
-exports.gulpTasks = gulpTasks;
 exports.middleware = middleware;
 exports.routeUtils = routeUtils;
 exports.routers = routers;

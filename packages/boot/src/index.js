@@ -19,8 +19,8 @@ export default class Boot {
    * @param {string} containerNodeId - The node id where to render the view layer
    */
   static init(settingsClass, routerClass, containerNodeId) {
-    contextInit(containerNodeId);
     confInit(settingsClass);
+    contextInit(containerNodeId);
     Boot.start(routerClass);
   }
 

@@ -39,7 +39,7 @@ class UrlDefinition {
   }
 }
 
-class IncludeDefinition {
+export class IncludeDefinition {
   constructor(router) {
     this._router = router;
   }

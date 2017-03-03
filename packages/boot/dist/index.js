@@ -42,8 +42,8 @@ var Boot = function () {
      * @param {string} containerNodeId - The node id where to render the view layer
      */
     value: function init(settingsClass, routerClass, containerNodeId) {
-      (0, _contexts._init)(containerNodeId);
       (0, _conf._init)(settingsClass);
+      (0, _contexts._init)(containerNodeId);
       Boot.start(routerClass);
     }
   }, {
