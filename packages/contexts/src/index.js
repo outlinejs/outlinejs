@@ -53,6 +53,8 @@ export class ResponseContext extends DecorableContext {
     try {
       url = RouteUtils.reverse(to, this.request, params);
     } catch (ex) {
+      console.error(ex);
+
       url = to;
 
       if (runtime.isClient) {
