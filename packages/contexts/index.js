@@ -97,6 +97,10 @@ export class ResponseContext extends DecorableContext {
 
 }
 
+/**
+ * Class to parse and convert a string url (https://user:password@github.com:8000/outlinejs/outlinejs?q=string#hash)
+ * from current request in structured components.
+ */
 class Url {
   constructor(request) {
     this._request = request;
@@ -113,10 +117,16 @@ class Url {
       let protocol = this._request.connection.encrypted || this._request.headers['X-Forwarded-Proto'] === 'https' ?
         'https:' : 'http:';
 
-      this._serverUrl = new URL(`${protocol}//${this._request.headers.host.replace(/:80$/, '')}${this._request.url}`);
+      // class URL is Experimental ...
+      // so use old url.parse
+      this._serverUrl = url.parse(`${protocol}//${this._request.headers.host.replace(/:80$/, '')}${this._request.url}`);
     }
   }
 
+  /**
+   * A string containing the entire URL.
+   * For example: 'https://xpicio:123456@github.com:8000/outlinejs/outlinejs?q=string#hash'
+   */
   get href() {
     if (runtime.isClient) {
       return this._clientUrl.href;
@@ -125,6 +135,10 @@ class Url {
     }
   }
 
+  /**
+   * The protocol string identifies the URL's lower-cased protocol scheme.
+   * For example: 'https:'
+   */
   get protocol() {
     if (runtime.isClient) {
       return this._clientUrl.protocol;
@@ -133,22 +147,46 @@ class Url {
     }
   }
 
+  /**
+   * A string containing the username specified before the domain name.
+   * For example: 'xpicio:'
+   */
   get username() {
     if (runtime.isClient) {
       return this._clientUrl.username;
     } else {
-      return this._serverUrl.username;
+      let username = '';
+
+      if (this._serverUrl.username) {
+        username = this._serverUrl.username.split(':')[0];
+      }
+
+      return username || '';
     }
   }
 
+  /**
+   * A string containing the password specified before the domain name.
+   * For example: '123456:'
+   */
   get password() {
     if (runtime.isClient) {
       return this._clientUrl.password;
     } else {
-      return this._serverUrl.password;
+      let password = '';
+
+      if (this._serverUrl.password) {
+        password = this._serverUrl.password.split(':')[1];
+      }
+
+      return password || '';
     }
   }
 
+  /**
+   * The hostname property is the lower-cased host name portion of the host component without the port included.
+   * For example: 'github.com'
+   */
   get hostname() {
     if (runtime.isClient) {
       return this._clientUrl.hostname;
@@ -157,6 +195,10 @@ class Url {
     }
   }
 
+  /**
+   * A string containing the port portion of the host component.
+   * For example: '8000'
+   */
   get port() {
     if (runtime.isClient) {
       return this._clientUrl.port;
@@ -165,14 +207,22 @@ class Url {
     }
   }
 
+  /**
+   * A string containing the canonical form of the origin of the specific url.
+   * For example: 'https://github.com'
+   */
   get origin() {
     if (runtime.isClient) {
       return this._clientUrl.origin;
     } else {
-      return this._serverUrl.origin;
+      return `${this._serverUrl.protocol}//${this._serverUrl.hostname}`;
     }
   }
 
+  /**
+   * A string containing an initial '/' followed by the path of the url.
+   * For example: '/outlinejs/outlinejs'
+   */
   get pathname() {
     if (runtime.isClient) {
       return this._clientUrl.pathname;
@@ -181,6 +231,10 @@ class Url {
     }
   }
 
+  /**
+   * A string containing a '?' followed by the parameters of the url, also known as "querystring".
+   * For example: '?q=string'
+   */
   get search() {
     if (runtime.isClient) {
       return this._clientUrl.search;
@@ -189,24 +243,35 @@ class Url {
     }
   }
 
+  /**
+   * An object containing the parsed parameters of the url.
+   * For example: '{ q: 'string' }'
+   */
   get query() {
-    if (runtime.isClient) {
-      let qs = require('qs');
+    let qs = require('qs');
 
-      return qs.parse(this._clientUrl.query);
+    if (runtime.isClient) {
+      return qs.parse(this._clientUrl.search);
     } else {
-      return this._serverUrl.query;
+      return qs.parse(this._serverUrl.query);
     }
   }
 
+  /**
+   * A string containing the path property that is a concatenation of the pathname and search components.
+   * For example: '/outlinejs/outlinejs?q=string'
+   */
   get path() {
     if (runtime.isClient) {
-      return this._clientUrl.pathname + this._clientUrl.search;
+      return `${this._clientUrl.pathname}${this._clientUrl.search}`;
     } else {
       return this._serverUrl.path;
     }
   }
 
+  /**
+   * A string containing a '#' followed by the fragment identifier of the url.
+   */
   get hash() {
     if (runtime.isClient) {
       return this._clientUrl.hash;
