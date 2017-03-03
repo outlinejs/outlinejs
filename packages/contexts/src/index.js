@@ -36,7 +36,6 @@ export class ResponseContext extends DecorableContext {
 
     this._response = response;
     this._request = request;
-    this._router = require('@outlinejs/routers');
   }
 
   get response() {
