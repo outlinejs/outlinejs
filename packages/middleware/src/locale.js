@@ -29,7 +29,8 @@ export default class {
   }
 
   qsStrategy(request) {
-    let parsedQueryString = request.url.query;
+    let qs = require('qs');
+    let parsedQueryString = qs.parse(request.query);
 
     // check if query string parameter language exist
     if (parsedQueryString.language) {
