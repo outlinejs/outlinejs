@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/translation",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "OutlineJS Translation Package",
   "main": "dist/index.js",
   "scripts": {
