@@ -2,7 +2,7 @@
   "name": "@outlinejs/routers",
   "version": "3.0.0",
   "description": "OutlineJS Routing Package",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -2,7 +2,7 @@
   "name": "@outlinejs/controllers",
   "version": "3.0.0",
   "description": "OutlineJS Controllers Package",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
