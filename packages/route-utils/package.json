@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/route-utils",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "OutlineJS Routing Utils",
   "main": "dist/index.js",
   "scripts": {
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
-    "@outlinejs/conf": "^3.0.1"
+    "@outlinejs/conf": "^3.0.2"
   },
   "publishConfig": {
     "access": "public"
