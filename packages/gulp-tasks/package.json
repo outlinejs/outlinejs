@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/gulp-tasks",
-  "version": "3.0.9",
+  "version": "3.0.10",
   "description": "OutlineJS Gulp Tasks",
   "main": "dist/index.js",
   "scripts": {

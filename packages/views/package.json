@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/views",
-  "version": "3.0.9",
+  "version": "3.0.10",
   "description": "OutlineJS Base Views",
   "main": "dist/index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "react": "^15.4.2"
   },
   "dependencies": {
-    "@outlinejs/components": "^3.0.9"
+    "@outlinejs/components": "^3.0.10"
   },
   "publishConfig": {
     "access": "public"
