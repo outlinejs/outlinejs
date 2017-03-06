@@ -164,8 +164,8 @@ export default class {
    */
   load() {
     this.gulp.task('ojs:env', (cb) => {
-      //only env vars with BROWSER_ prefix are exposed
-      var safeRegEx = new RegExp('^BROWSER_');
+      //only env vars with OJS_ prefix are exposed
+      var safeRegEx = new RegExp('^OJS_');
       var env = nconf.env().stores.env.store;
       var safeEnv = {};
       for (var k of Object.keys(env)) {
