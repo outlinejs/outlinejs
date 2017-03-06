@@ -251,8 +251,8 @@ var _class = function () {
       var _this2 = this;
 
       this.gulp.task('ojs:env', function (cb) {
-        //only env vars with BROWSER_ prefix are exposed
-        var safeRegEx = new RegExp('^BROWSER_');
+        //only env vars with OJS_ prefix are exposed
+        var safeRegEx = new RegExp('^OJS_');
         var env = _nconf2.default.env().stores.env.store;
         var safeEnv = {};
         var _iteratorNormalCompletion2 = true;
