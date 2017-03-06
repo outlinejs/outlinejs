@@ -4,11 +4,15 @@ let _stateRouteMapping = {};
 
 export class RouteUtils {
   static reverse(state, request, params = {}) {
-    let language = request.i18n.language;
     // update the state with the current language
-    state = language + ':' + state;
+    state = request.language + ':' + state;
 
-    let url = _stateRouteMapping[state](params); //eslint-disable-line no-shadow
+    let callback = _stateRouteMapping[state];
+    if (!callback) {
+      throw `State '${state}' is not registered.`;
+    }
+
+    let url = callback(params);
 
     return `/${url}`;
   }
@@ -17,7 +21,9 @@ export class RouteUtils {
     _stateRouteMapping[state] = callback;
   }
 
-  static activeCssClass(request, state, cssClass = 'active') {
+  static activeCssClass(state, request, cssClass = 'active') {
+    // update the state with the current language
+    state = request.language + ':' + state;
     if (request && request.isState(state)) {
       return cssClass;
     }

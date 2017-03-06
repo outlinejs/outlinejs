@@ -26,11 +26,15 @@ var RouteUtils = exports.RouteUtils = function () {
     value: function reverse(state, request) {
       var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      var language = request.i18n.language;
       // update the state with the current language
-      state = language + ':' + state;
+      state = request.language + ':' + state;
 
-      var url = _stateRouteMapping[state](params); //eslint-disable-line no-shadow
+      var callback = _stateRouteMapping[state];
+      if (!callback) {
+        throw 'State \'' + state + '\' is not registered.';
+      }
+
+      var url = callback(params);
 
       return '/' + url;
     }
@@ -41,9 +45,11 @@ var RouteUtils = exports.RouteUtils = function () {
     }
   }, {
     key: 'activeCssClass',
-    value: function activeCssClass(request, state) {
+    value: function activeCssClass(state, request) {
       var cssClass = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'active';
 
+      // update the state with the current language
+      state = request.language + ':' + state;
       if (request && request.isState(state)) {
         return cssClass;
       }
