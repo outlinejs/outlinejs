@@ -9,8 +9,8 @@ hasher@^1.2.0:
     signals ">0.7 <2.0"
 
 html5-history-api@^4.2.7:
-  version "4.2.7"
-  resolved "https://registry.yarnpkg.com/html5-history-api/-/html5-history-api-4.2.7.tgz#038690111e8c184733b742681935829afe18c64e"
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/html5-history-api/-/html5-history-api-4.2.8.tgz#3ebbc38e36cae0dc410f74c20fdd5d76d93e96a8"
 
 "signals@>0.7 <2.0":
   version "1.0.0"

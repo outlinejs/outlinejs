@@ -1,7 +1,7 @@
 import React from 'react';
 import Remarkable from 'remarkable';
 import Helmet from 'react-helmet';
-import { RouteUtils } from '@outlinejs/route-utils';
+import {Utils as RouteUtils} from '@outlinejs/routing';
 
 
 export class BaseComponent extends React.Component {
@@ -33,6 +33,10 @@ export class BaseComponent extends React.Component {
 
   get i18n() {
     return this.request.i18n;
+  }
+
+  static(asset) {
+    return `/static/${asset}`;
   }
 
   set delegate(value) {
@@ -95,7 +99,7 @@ export class Link extends BaseComponent {
     event.preventDefault();
 
     if (allowTransition) {
-      const { state, params } = this.props;
+      const {state, params} = this.props;
 
       this.response.navigate(state, params);
     }
@@ -103,7 +107,7 @@ export class Link extends BaseComponent {
 
   render() {
     let props = {};
-    let { state, params, className, activeClassName, children, style, title } = this.props;
+    let {state, params, className, activeClassName, children, style, title} = this.props;
 
     props.href = RouteUtils.reverse(state, this.request, params);
 
@@ -131,6 +135,6 @@ export class Link extends BaseComponent {
 
     props.children = children;
 
-    return <a {...props} onClick={ this.handleClick.bind(this) } />;
+    return <a {...props} onClick={ this.handleClick.bind(this) }/>;
   }
 }

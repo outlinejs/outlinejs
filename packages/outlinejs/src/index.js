@@ -4,7 +4,7 @@ import * as conf from '@outlinejs/conf';
 import * as contexts from '@outlinejs/contexts';
 import * as controllers from '@outlinejs/controllers';
 import * as middleware from '@outlinejs/middleware';
-import * as routeUtils from '@outlinejs/route-utils';
+import * as routing from '@outlinejs/routing';
 import * as routers from '@outlinejs/routers';
 import * as translation from '@outlinejs/translation';
 import * as views from '@outlinejs/views';
@@ -17,7 +17,7 @@ export {
   contexts,
   controllers,
   middleware,
-  routeUtils,
+  routing,
   routers,
   translation,
   views

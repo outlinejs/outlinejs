@@ -1,11 +1,26 @@
 import crossroads from 'crossroads';
-import { Jed } from 'jed';
-import { runtime } from '@outlinejs/contexts';
-import { settings } from '@outlinejs/conf';
-import { IncludeDefinition, RouteUtils } from '@outlinejs/route-utils';
+import {Jed} from 'jed';
+import {runtime} from '@outlinejs/contexts';
+import {settings} from '@outlinejs/conf';
+import {IncludeDefinition, Utils as RouteUtils} from '@outlinejs/routing';
 
 export class BaseRouter {
-  constructor(prefix = '') {
+  static init() {
+    if (runtime.isServer) {
+      crossroads.ignoreState = true;
+      crossroads.bypassed.add((req, res) => {
+        res.writeHead(404, {'Content-Type': 'text/html'});
+        res.end('<html><body><h1>HTTP 404 - Page Not Found</h1><hr/><p>OutlineJS Server</p></body></html>');
+      });
+    }
+    this.loadRoutes();
+  }
+
+  static dispatch(url, request, response) {
+    crossroads.parse(url, [request, response]);
+  }
+
+  static loadRoutes(prefix = '') {
     // init the routing mapping
     for (let item of Object.keys(this.urlPatterns)) {
       let urlPattern = this.urlPatterns[item];
@@ -16,7 +31,7 @@ export class BaseRouter {
 
       if (urlPattern instanceof IncludeDefinition) {
         // init a sub router modules
-        new urlPattern.router(`${prefix}${item}`); //eslint-disable-line new-cap, no-new
+        urlPattern.router.loadRoutes(`${prefix}${item}`);
       } else {
         // urlPattern is an array of urlDefinition one
         // for each supported language
@@ -73,14 +88,14 @@ export class BaseRouter {
           });
 
           RouteUtils.mapRoute(urlDefinition.state, (params) => {
-            crossroadsRoute.interpolate(params);
+            return crossroadsRoute.interpolate(params);
           });
         }
       }
     }
   }
 
-  routeTo(urlDef, req, res, ...args) {
+  static routeTo(urlDef, req, res, ...args) {
     let Controller = urlDef.controller;
 
     if (runtime.isClient) {
@@ -114,7 +129,7 @@ export class BaseRouter {
     }
   }
 
-  get urlPatterns() {
+  static get urlPatterns() {
     throw 'NotImplemented';
   }
 }

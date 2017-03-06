@@ -14,19 +14,16 @@ var _contexts = require('@outlinejs/contexts');
 
 var _conf = require('@outlinejs/conf');
 
-var _crossroads = require('crossroads');
-
-var _crossroads2 = _interopRequireDefault(_crossroads);
-
 var _events = require('events');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RouterClass = null;
 
 /**
  * Class for bootstrapping an outlineJs project.
  */
+
 var Boot = function () {
   function Boot() {
     _classCallCheck(this, Boot);
@@ -42,14 +39,15 @@ var Boot = function () {
      * @param {string} containerNodeId - The node id where to render the view layer
      */
     value: function init(settingsClass, routerClass, containerNodeId) {
+      RouterClass = routerClass;
       (0, _conf._init)(settingsClass);
       (0, _contexts._init)(containerNodeId);
-      Boot.start(routerClass);
+      Boot.start();
     }
   }, {
     key: 'start',
-    value: function start(routerClass) {
-      new routerClass(); //eslint-disable-line no-unused-vars, new-cap, no-new
+    value: function start() {
+      RouterClass.init();
       if (_contexts.runtime.isClient) {
         Boot.bootClient();
       } else {
@@ -63,11 +61,6 @@ var Boot = function () {
       var urlModule = require('url');
       var proxyServer = '0.0.0.0'; //process.env.server || '0.0.0.0';
       var proxyPort = 1337; //parseInt(process.env.port) || 1337;
-      _crossroads2.default.ignoreState = true;
-      _crossroads2.default.bypassed.add(function (req, res) {
-        res.writeHead(404, { 'Content-Type': 'text/html' });
-        res.end('<html><body><h1>HTTP 404 - Page Not Found</h1><hr/><p>OutlineJS Server</p></body></html>');
-      });
       http.createServer(function (req, res) {
         var requestedUrl = urlModule.parse(req.url).pathname;
         Boot.processUrl(requestedUrl, req, res);
@@ -129,11 +122,6 @@ var Boot = function () {
           if (middleware.processRequest) {
             middlewarePromises.push(middleware.processRequest(req, res));
           }
-
-          //processResponse
-          if (middleware.processResponse) {
-            middlewarePromises.push(middleware.processResponse(req, res));
-          }
         }
       } catch (err) {
         _didIteratorError = true;
@@ -151,9 +139,7 @@ var Boot = function () {
       }
 
       Promise.all(middlewarePromises).then(function () {
-        //crossroad parse a string input and dispatch matched signal of the first route
-        //that matches the request
-        _crossroads2.default.parse(path, [req, res]);
+        RouterClass.dispatch(path, req, res);
       }, function (error) {
         res.error(error);
       });

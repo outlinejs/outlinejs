@@ -2,7 +2,7 @@ import {settings} from '@outlinejs/conf';
 
 let _stateRouteMapping = {};
 
-export class RouteUtils {
+export class Utils {
   static reverse(state, request, params = {}) {
     // update the state with the current language
     state = request.language + ':' + state;

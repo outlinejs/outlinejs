@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.views = exports.translation = exports.routers = exports.routeUtils = exports.middleware = exports.controllers = exports.contexts = exports.conf = exports.components = exports.Boot = undefined;
+exports.views = exports.translation = exports.routers = exports.routing = exports.middleware = exports.controllers = exports.contexts = exports.conf = exports.components = exports.Boot = undefined;
 
 var _boot = require('@outlinejs/boot');
 
@@ -29,9 +29,9 @@ var _middleware = require('@outlinejs/middleware');
 
 var middleware = _interopRequireWildcard(_middleware);
 
-var _routeUtils = require('@outlinejs/route-utils');
+var _routing = require('@outlinejs/routing');
 
-var routeUtils = _interopRequireWildcard(_routeUtils);
+var routing = _interopRequireWildcard(_routing);
 
 var _routers = require('@outlinejs/routers');
 
@@ -55,7 +55,7 @@ exports.conf = conf;
 exports.contexts = contexts;
 exports.controllers = controllers;
 exports.middleware = middleware;
-exports.routeUtils = routeUtils;
+exports.routing = routing;
 exports.routers = routers;
 exports.translation = translation;
 exports.views = views;

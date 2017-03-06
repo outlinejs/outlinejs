@@ -2,11 +2,31 @@
 # yarn lockfile v1
 
 
-crossroads@^0.12.2:
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/crossroads/-/crossroads-0.12.2.tgz#b1d5f9c1d98af3bdd61f1bda6a86dd1aee4ff8f2"
+"@outlinejs/conf@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@outlinejs/conf/-/conf-3.0.3.tgz#44f7a3cda09843746baea84fa14f295c8586dbb2"
+
+"@outlinejs/contexts@^3.0.8":
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/@outlinejs/contexts/-/contexts-3.0.8.tgz#5f761a632cc01cac488cb91a9293b02b9e9dc254"
   dependencies:
-    signals "<2.0"
+    "@outlinejs/conf" "^3.0.3"
+    "@outlinejs/route-utils" "^3.0.8"
+    "@outlinejs/translation" "^3.0.3"
+    hasher "^1.2.0"
+    html5-history-api "^4.2.7"
+
+"@outlinejs/route-utils@^3.0.8":
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/@outlinejs/route-utils/-/route-utils-3.0.8.tgz#65aad8852673576c7a04e7ede6cbadb549a55e8c"
+  dependencies:
+    "@outlinejs/conf" "^3.0.3"
+
+"@outlinejs/translation@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@outlinejs/translation/-/translation-3.0.3.tgz#3fdebe08da0a1c6e2c2700e10f1ae575d8200730"
+  dependencies:
+    jed "^1.1.1"
 
 hasher@^1.2.0:
   version "1.2.0"
@@ -15,9 +35,13 @@ hasher@^1.2.0:
     signals ">0.7 <2.0"
 
 html5-history-api@^4.2.7:
-  version "4.2.7"
-  resolved "https://registry.yarnpkg.com/html5-history-api/-/html5-history-api-4.2.7.tgz#038690111e8c184733b742681935829afe18c64e"
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/html5-history-api/-/html5-history-api-4.2.8.tgz#3ebbc38e36cae0dc410f74c20fdd5d76d93e96a8"
 
-signals@<2.0, "signals@>0.7 <2.0":
+jed@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/jed/-/jed-1.1.1.tgz#7a549bbd9ffe1585b0cd0a191e203055bee574b4"
+
+"signals@>0.7 <2.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/signals/-/signals-1.0.0.tgz#65f0c1599352b35372ecaae5a250e6107376ed69"

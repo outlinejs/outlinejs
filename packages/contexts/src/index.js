@@ -2,7 +2,7 @@ import querystring from 'querystring';
 import url from 'url';
 import Translation from '@outlinejs/translation';
 import {settings} from '@outlinejs/conf';
-import {RouteUtils} from '@outlinejs/route-utils';
+import {Utils as RouteUtils} from '@outlinejs/routing';
 
 export let runtime = null;
 

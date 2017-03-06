@@ -23,7 +23,7 @@ var _translation2 = _interopRequireDefault(_translation);
 
 var _conf = require('@outlinejs/conf');
 
-var _routeUtils = require('@outlinejs/route-utils');
+var _routing = require('@outlinejs/routing');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -107,7 +107,6 @@ var ResponseContext = exports.ResponseContext = function (_DecorableContext) {
 
     _this2._response = response;
     _this2._request = request;
-    _this2._router = require('@outlinejs/routers');
     return _this2;
   }
 
@@ -119,7 +118,7 @@ var ResponseContext = exports.ResponseContext = function (_DecorableContext) {
       var url = void 0; //eslint-disable-line no-shadow
 
       try {
-        url = _routeUtils.RouteUtils.reverse(to, this.request, params);
+        url = _routing.Utils.reverse(to, this.request, params);
       } catch (ex) {
         url = to;
 

@@ -21,7 +21,7 @@ var _reactHelmet = require('react-helmet');
 
 var _reactHelmet2 = _interopRequireDefault(_reactHelmet);
 
-var _routeUtils = require('@outlinejs/route-utils');
+var _routing = require('@outlinejs/routing');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -54,6 +54,11 @@ var BaseComponent = exports.BaseComponent = function (_React$Component) {
     value: function rawMarkup(text) {
       var md = new _remarkable2.default({ html: true, breaks: true });
       return md.render(text);
+    }
+  }, {
+    key: 'static',
+    value: function _static(asset) {
+      return '/static/' + asset;
     }
   }, {
     key: 'request',
@@ -178,7 +183,7 @@ var Link = exports.Link = function (_BaseComponent2) {
           title = _props2.title;
 
 
-      props.href = _routeUtils.RouteUtils.reverse(state, this.request, params);
+      props.href = _routing.Utils.reverse(state, this.request, params);
 
       if (className) {
         props.className = className;
