@@ -83,6 +83,7 @@ export class BaseController {
         html = html.replace('<head>', `<head>${head.title.toString()}`);
         html = html.replace('<head>', `<head>${head.meta.toString()}`);
         html = html.replace('<head>', `<head>${head.link.toString()}`);
+        html = html.replace('<head>', `<head>${head.script.toString()}`);
         html = html.replace('<head>', `<head>${head.noscript.toString()}`);
 
         // output to http response
