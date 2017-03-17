@@ -46,7 +46,7 @@ export class Link extends BaseComponent {
 
   render() {
     var props = {};
-    var { state, params, className, activeClassName, children, style, title } = this.props;
+    var { state, params, className, activeClassName, children, style, title, target } = this.props;
 
     props.href = RouteUtils.reverse(state, params, this.request);
 
@@ -70,6 +70,10 @@ export class Link extends BaseComponent {
 
     if (title) {
       props.title = title;
+    }
+
+    if (target) {
+      props.target = target;
     }
 
     props.children = children;
