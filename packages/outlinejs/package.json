@@ -1,6 +1,6 @@
 {
   "name": "outlinejs",
-  "version": "3.0.10",
+  "version": "3.0.11",
   "description": "OutlineJS nano framework",
   "main": "dist/index.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "@outlinejs/conf": "^3.0.3",
     "@outlinejs/contexts": "^3.0.10",
     "@outlinejs/controllers": "^3.0.10",
-    "@outlinejs/gulp-tasks": "^3.0.10",
+    "@outlinejs/gulp-tasks": "^3.0.11",
     "@outlinejs/middleware": "^3.0.10",
     "@outlinejs/routing": "^3.0.10",
     "@outlinejs/routers": "^3.0.10",
