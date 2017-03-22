@@ -22,7 +22,6 @@
     "@outlinejs/conf": "^3.0.3",
     "@outlinejs/contexts": "^3.0.10",
     "@outlinejs/controllers": "^3.0.10",
-    "@outlinejs/gulp-tasks": "^3.0.12",
     "@outlinejs/middleware": "^3.0.10",
     "@outlinejs/routing": "^3.0.10",
     "@outlinejs/routers": "^3.0.10",
