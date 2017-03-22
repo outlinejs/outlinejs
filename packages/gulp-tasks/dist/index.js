@@ -101,6 +101,7 @@ var _class = function () {
     this.browserify = browserify;
     this.projectJsEntry = './project/main.js';
     this.eslint = eslint;
+    this._openBrowser = true;
   }
 
   /**
@@ -111,7 +112,6 @@ var _class = function () {
 
   _createClass(_class, [{
     key: 'getMainFile',
-
 
     /**
      * Gets main javascript filename.
@@ -466,6 +466,8 @@ var _class = function () {
           ext: 'js',
           delay: 1000
         }).on('start', function () {
+          var _this3 = this;
+
           if (!nmStarted) {
             nmStarted = true;
             var proxy = _httpProxy2.default.createProxyServer({
@@ -477,6 +479,7 @@ var _class = function () {
               (0, _browserSync2.default)({
                 notify: false,
                 port: portWatch,
+                open: _this3.openBrowser,
                 server: {
                   baseDir: ['.tmp', 'project'],
                   routes: {
@@ -512,6 +515,7 @@ var _class = function () {
         (0, _browserSync2.default)({
           notify: false,
           port: portWatch,
+          open: _this2.openBrowser,
           server: {
             index: 'main.html',
             baseDir: ['.tmp', 'project'],
@@ -535,6 +539,7 @@ var _class = function () {
         }).on('start', function () {
           (0, _browserSync2.default)({
             notify: false,
+            open: _this2.openBrowser,
             proxy: proxyTarget,
             serveStatic: ['./dist/'],
             port: portWatchDist
@@ -546,6 +551,26 @@ var _class = function () {
     key: 'projectEntry',
     set: function set(value) {
       this.projectJsEntry = value;
+    }
+
+    /**
+     * Automatically open browser at serve start
+     * @param {bool} value
+     */
+
+  }, {
+    key: 'openBrowser',
+    set: function set(value) {
+      this._openBrowser = value;
+    }
+
+    /**
+     * Automatically open browser at serve start
+     * @returns {bool}
+     */
+    ,
+    get: function get() {
+      return this._openBrowser;
     }
   }]);
 

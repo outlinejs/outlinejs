@@ -39,6 +39,7 @@ export default class {
     this.browserify = browserify;
     this.projectJsEntry = './project/main.js';
     this.eslint = eslint;
+    this._openBrowser = true;
   }
 
   /**
@@ -49,6 +50,21 @@ export default class {
     this.projectJsEntry = value;
   }
 
+  /**
+   * Automatically open browser at serve start
+   * @param {bool} value
+   */
+  set openBrowser(value) {
+    this._openBrowser = value;
+  }
+
+  /**
+   * Automatically open browser at serve start
+   * @returns {bool}
+   */
+  get openBrowser() {
+    return this._openBrowser;
+  }
   /**
    * Gets main javascript filename.
    * @returns {string}
@@ -425,6 +441,7 @@ export default class {
             browserSync({
               notify: false,
               port: portWatch,
+              open: this.openBrowser,
               server: {
                 baseDir: ['.tmp', 'project'],
                 routes: {
@@ -466,6 +483,7 @@ export default class {
       browserSync({
         notify: false,
         port: portWatch,
+        open: this.openBrowser,
         server: {
           index: 'main.html',
           baseDir: ['.tmp', 'project'],
@@ -486,9 +504,10 @@ export default class {
       return $.nodemon({
         script: './dist/node-scripts/main.js',
         watch: './dist/node-scripts/'
-      }).on('start', function () {
+      }).on('start', () => {
         browserSync({
           notify: false,
+          open: this.openBrowser,
           proxy: proxyTarget,
           serveStatic: ['./dist/'],
           port: portWatchDist
