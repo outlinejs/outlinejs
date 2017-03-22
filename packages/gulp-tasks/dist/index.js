@@ -325,6 +325,23 @@ var _class = function () {
         });
       });
 
+      this.gulp.task('ojs:js-watch-client', ['ojs:env', 'ojs:locale-build'], function () {
+        var b = _this2.getBrowserify(true, false, true);
+        var bundle = _this2.getBrowserifyBundle(b);
+        b.on('update', function () {
+          _this2.getBrowserifyBundle(b);
+        });
+        return bundle;
+      });
+
+      this.gulp.task('ojs:pot', function () {
+        (0, _outlinejsBabelJsxgettext2.default)(_glob2.default.sync('project/**/*.js'), 'locale/template.pot', function (err) {
+          if (err) {
+            $.util.log(err);
+          }
+        });
+      });
+
       this.gulp.task('ojs:locale-build', function () {
         return _this2.gulp.src('locale/*.po').pipe((0, _gulpPo2json2.default)({ format: 'jed1.x' })).pipe(_this2.gulp.dest('.tmp/locale')).pipe(_this2.gulp.dest('dist/locale'));
       });
@@ -477,6 +494,32 @@ var _class = function () {
                 }
               });
             }, 2000);
+          }
+        });
+      });
+
+      this.gulp.task('ojs:serve-client', ['ojs:js-watch-client', 'ojs:styles', 'ojs:fonts', 'ojs:pot', 'ojs:locale-build', 'ojs:images-vendor'], function () {
+        _this2.gulp.watch('project/**/styles/*.scss', ['ojs:styles']);
+        _this2.gulp.watch('project/**/media/fonts/**/*', ['ojs:fonts-apps']);
+        _this2.gulp.watch('bower.json', ['ojs:wiredep', 'ojs:fonts-vendor']);
+        _this2.gulp.watch('package.json', ['ojs:fonts-vendor']); //TODO: and other tasks :)
+        _this2.gulp.watch('project/**/*.js', ['ojs:pot']);
+        _this2.gulp.watch('locale/*.po', ['ojs:locale-build']);
+
+        _this2.gulp.watch(['project/*.html', 'project/**/media/fonts/**/*', '.tmp/static/vendor-fonts/**/*', '.tmp/styles/**/*', '.tmp/locale/*.json']).on('change', reload);
+
+        var portWatch = parseInt(process.env.portWatch) || 9000;
+        (0, _browserSync2.default)({
+          notify: false,
+          port: portWatch,
+          server: {
+            index: 'main.html',
+            baseDir: ['.tmp', 'project'],
+            routes: {
+              '/bower_components': 'bower_components',
+              '/static': 'project',
+              '/static/vendor-fonts/': '.tmp/static/vendor-fonts'
+            }
           }
         });
       });

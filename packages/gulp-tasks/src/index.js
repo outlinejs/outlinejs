@@ -220,6 +220,23 @@ export default class {
       });
     });
 
+    this.gulp.task('ojs:js-watch-client', ['ojs:env', 'ojs:locale-build'], () => {
+      let b = this.getBrowserify(true, false, true);
+      let bundle = this.getBrowserifyBundle(b);
+      b.on('update', () => {
+        this.getBrowserifyBundle(b);
+      });
+      return bundle;
+    });
+
+    this.gulp.task('ojs:pot', () => {
+      gettext(glob.sync('project/**/*.js'), 'locale/template.pot', (err) => {
+        if (err) {
+          $.util.log(err);
+        }
+      });
+    });
+
     this.gulp.task('ojs:locale-build', () => {
       return this.gulp.src('locale/*.po')
         .pipe(po2json({format: 'jed1.x'}))
@@ -425,6 +442,38 @@ export default class {
               }
             });
           }, 2000);
+        }
+      });
+    });
+
+    this.gulp.task('ojs:serve-client', ['ojs:js-watch-client', 'ojs:styles', 'ojs:fonts', 'ojs:pot', 'ojs:locale-build', 'ojs:images-vendor'], () => {
+      this.gulp.watch('project/**/styles/*.scss', ['ojs:styles']);
+      this.gulp.watch('project/**/media/fonts/**/*', ['ojs:fonts-apps']);
+      this.gulp.watch('bower.json', ['ojs:wiredep', 'ojs:fonts-vendor']);
+      this.gulp.watch('package.json', ['ojs:fonts-vendor']); //TODO: and other tasks :)
+      this.gulp.watch('project/**/*.js', ['ojs:pot']);
+      this.gulp.watch('locale/*.po', ['ojs:locale-build']);
+
+      this.gulp.watch([
+        'project/*.html',
+        'project/**/media/fonts/**/*',
+        '.tmp/static/vendor-fonts/**/*',
+        '.tmp/styles/**/*',
+        '.tmp/locale/*.json'
+      ]).on('change', reload);
+
+      let portWatch = parseInt(process.env.portWatch) || 9000;
+      browserSync({
+        notify: false,
+        port: portWatch,
+        server: {
+          index: 'main.html',
+          baseDir: ['.tmp', 'project'],
+          routes: {
+            '/bower_components': 'bower_components',
+            '/static': 'project',
+            '/static/vendor-fonts/': '.tmp/static/vendor-fonts'
+          }
         }
       });
     });
