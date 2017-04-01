@@ -73,7 +73,7 @@ export class RouteUtils {
       var requestedUrl = urlModule.parse(req.url).pathname;
       RouteUtils.parseUrl(requestedUrl, req, res);
     }).listen(proxyPort, proxyServer, function () {
-      console.debug(`[ojs] Node.js is up and running on ${proxyServer}:${proxyPort}`);
+      console.log(`[ojs] Node.js is up and running on ${proxyServer}:${proxyPort}`);
     });
   }
 
