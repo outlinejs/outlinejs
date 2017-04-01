@@ -164,8 +164,8 @@ export default class {
    */
   load() {
     this.gulp.task('ojs:env', (cb) => {
-      //only env vars with BROWSER_ prefix are exposed
-      var safeRegEx = new RegExp('^BROWSER_');
+      //only env vars with OJS_ prefix are exposed
+      var safeRegEx = new RegExp('^OJS_');
       var env = nconf.env().stores.env.store;
       var safeEnv = {};
       for (var k of Object.keys(env)) {
@@ -173,10 +173,11 @@ export default class {
           safeEnv[k.replace(safeRegEx, '')] = env[k];
         }
       }
+
       try {
         fs.mkdirSync('./.tmp/');
-      } catch (ex) {
-      } //eslint-disable-line no-empty
+      } catch (ex) { } //eslint-disable-line no-empty
+
       fs.writeFile('./.tmp/env.json', JSON.stringify(safeEnv), (err) => {
         if (err) {
           $.util.log(err);
@@ -387,10 +388,11 @@ export default class {
       ]).on('change', reload);
 
       var nmStarted = false;
-      var proxyServer = process.env.server || '0.0.0.0';
-      var proxyPort = parseInt(process.env.port) || 1337;
+      var proxyServer = process.env.OJS_NODEJS_IP || '0.0.0.0';
+      var proxyPort = parseInt(process.env.OJS_NODEJS_PORT) || 1337;
       var proxyTarget = `http://${proxyServer}:${proxyPort}/`;
-      var portWatch = parseInt(process.env.portWatch) || 9000;
+      var portWatch = parseInt(process.env.OJS_WATCH_PORT) || 9000;
+
       $.nodemon({
         script: './.tmp/node-scripts/main.js',
         watch: './.tmp/node-scripts/',
@@ -430,10 +432,11 @@ export default class {
     });
 
     this.gulp.task('ojs:serve-dist', () => {
-      var proxyServer = process.env.server || '0.0.0.0';
-      var proxyPort = parseInt(process.env.port) || 1337;
+      var proxyServer = process.env.OJS_NODEJS_IP || '0.0.0.0';
+      var proxyPort = parseInt(process.env.OJS_NODEJS_PORT) || 1338;
       var proxyTarget = `http://${proxyServer}:${proxyPort}/`;
-      var portWatchDist = parseInt(process.env.portWatch) || 9001;
+      var portWatchDist = parseInt(process.env.OJS_WATCH_PORT) || 9001;
+
       return $.nodemon({
         script: './dist/node-scripts/main.js',
         watch: './dist/node-scripts/'
