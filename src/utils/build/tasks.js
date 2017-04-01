@@ -129,6 +129,7 @@ export default class {
       .pipe(vinylSource(this.getMainFile()))
       .pipe(vinylBuffer())
       .pipe($.sourcemaps.init({loadMaps: true}))
+      .pipe($.uglify())
       .pipe($.sourcemaps.write('./')); // writes .map file
     if (clientMode) {
       bundle = bundle
@@ -258,14 +259,12 @@ export default class {
     this.gulp.task('ojs:html', ['ojs:js-build', 'ojs:styles'], () => {
       return this.gulp.src('project/*.html')
         .pipe($.useref({searchPath: ['.tmp', '.']}))
-        .pipe($.if('*.js', $.uglify()))
         .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true})))
         .pipe(this.gulp.dest('dist'));
     });
 
     this.gulp.task('ojs:node-app', ['ojs:js-build'], () => {
       return this.gulp.src('.tmp/node-scripts/*.js')
-        .pipe($.uglify())
         .pipe(this.gulp.dest('dist/node-scripts'));
     });
 
@@ -368,7 +367,8 @@ export default class {
     });
 
     this.gulp.task('ojs:build', ['ojs:lint', 'ojs:test', 'ojs:html', 'ojs:node-app', 'ojs:images', 'ojs:fonts', 'ojs:extras', 'ojs:locale-build'], () => {
-      return this.gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
+      return this.gulp.src('dist/**/*')
+        .pipe($.size({title: 'build', gzip: true}));
     });
 
     this.gulp.task('ojs:serve', ['ojs:js-watch', 'ojs:styles', 'ojs:fonts', 'ojs:pot', 'ojs:locale-build', 'ojs:images-vendor'], () => {
