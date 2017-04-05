@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/contexts",
-  "version": "3.0.14",
+  "version": "3.0.15",
   "description": "OutlineJS Contexts (Request/Response/Runtime) Package",
   "main": "dist/index.js",
   "scripts": {
