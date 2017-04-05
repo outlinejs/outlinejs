@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/boot",
-  "version": "3.0.10",
+  "version": "3.0.14",
   "description": "OutlineJS Boot Package",
   "main": "dist/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
     "@outlinejs/conf": "^3.0.3",
-    "@outlinejs/contexts": "^3.0.10",
+    "@outlinejs/contexts": "^3.0.14",
     "hasher": "^1.2.0",
     "html5-history-api": "^4.2.7"
   },

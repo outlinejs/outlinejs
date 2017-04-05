@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/routers",
-  "version": "3.0.10",
+  "version": "3.0.14",
   "description": "OutlineJS Routing Package",
   "main": "dist/index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "hasher": "^1.2.0",
     "html5-history-api": "^4.2.7",
     "jed": "^1.1.1",
-    "@outlinejs/contexts": "^3.0.10",
+    "@outlinejs/contexts": "^3.0.14",
     "@outlinejs/routing": "^3.0.10",
     "@outlinejs/conf": "^3.0.3"
   },
