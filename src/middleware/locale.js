@@ -3,13 +3,7 @@ import { runtime, settings } from '../contexts';
 export default class {
   urlStrategy(request) {
     // cleanup language value
-    let language = null;
-
-    if (runtime.isServer) {
-      language = request.url.split('/')[1].toLowerCase().trim();
-    } else {
-      language = window.location.pathname.split('/')[1].toLowerCase().trim();
-    }
+    let language = request.url.pathname.split('/')[1].toLowerCase().trim();
 
     // cleanup array elements converting to lowercase and trim it
     let supportedLanguages = settings.LANGUAGES.map((item) => {
@@ -28,8 +22,7 @@ export default class {
   }
 
   qsStrategy(request) {
-    let qs = require('qs');
-    let parsedQueryString = qs.parse(request.query);
+    let parsedQueryString = request.url.query;
 
     // check if query string parameter language exist
     if (parsedQueryString.language) {

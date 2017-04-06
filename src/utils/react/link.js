@@ -48,14 +48,14 @@ export class Link extends BaseComponent {
     var props = {};
     var { state, params, className, activeClassName, children, style, title, target } = this.props;
 
-    props.href = RouteUtils.reverse(state, params, this.request);
+    props.href = RouteUtils.reverse(state, this.request, params);
 
     if (className) {
       props.className = className;
     }
 
     if (activeClassName) {
-      if (this.request && this.request.absoluteUrl.endsWith(props.href)) {
+      if (this.request && this.request.url.href.endsWith(props.href)) {
         if (className) {
           props.className += ` ${activeClassName}`;
         } else {
