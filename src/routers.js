@@ -241,8 +241,8 @@ export class BaseRouter {
         res.error(new Error(`State ${settings.LOGIN_STATE} is undefined`));
         return;
       }
-      var nextUrl = encodeURIComponent(req.absoluteUrl);
-      loginUrl = `${loginUrl}?next-url=${nextUrl}`;
+      var nextUrl = encodeURIComponent(req.url.href);
+      loginUrl = `${loginUrl}?next=${nextUrl}`;
       res.navigate(loginUrl);
       return;
     }

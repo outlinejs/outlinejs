@@ -55,7 +55,7 @@ export class Link extends BaseComponent {
     }
 
     if (activeClassName) {
-      if (this.request && this.request.absoluteUrl.endsWith(props.href)) {
+      if (this.request && this.request.url.href.endsWith(props.href)) {
         if (className) {
           props.className += ` ${activeClassName}`;
         } else {
