@@ -57,7 +57,7 @@ export class ResponseContext extends DecorableContext {
     var url; //eslint-disable-line no-shadow
 
     try {
-      url = this.routeUtils.reverse(to, params, this.request);
+      url = this.routeUtils.reverse(to, this.request, params);
     } catch (ex) {
       url = to;
 
@@ -288,7 +288,7 @@ export class RequestContext extends DecorableContext {
 
     this._user = null;
     this._state = null;
-    this._language = null;
+    this._language = settings.DEFAULT_LANGUAGE;
     this._i18n = new Translation();
     this._request = request;
     this._query = null;

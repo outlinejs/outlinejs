@@ -130,14 +130,8 @@ export class RouteUtils {
     });
   }
 
-  static reverse(state, params = {}, request = null) {
-    let language = settings.DEFAULT_LANGUAGE;
-
-    // when a request is present set language
-    // with the current request language
-    if (request !== null) {
-      language = request.i18n.language;
-    }
+  static reverse(state, request, params = {}) {
+    let language = request.language;
 
     // update the state with the current language
     state = language + ':' + state;
@@ -236,7 +230,7 @@ export class BaseRouter {
 
     if (Controller.loginRequired && !req.user) {
       try {
-        var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE, null, req);
+        var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE, req, null);
       } catch (ex) {
         res.error(new Error(`State ${settings.LOGIN_STATE} is undefined`));
         return;
