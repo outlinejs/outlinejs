@@ -3,6 +3,7 @@ import crossroads from 'crossroads';
 import { Jed } from 'jed';
 import { RequestContext, ResponseContext, runtime } from './contexts';
 import { settings } from './contexts';
+import env from './utils/env';
 
 let _stateRouteMapping = {};
 
@@ -59,17 +60,21 @@ export class RouteUtils {
   static _listenServer() {
     var http = require('http');
     var urlModule = require('url');
-    var proxyServer = '0.0.0.0';//process.env.server || '0.0.0.0';
-    var proxyPort = 1337;//parseInt(process.env.port) || 1337;
+    var proxyServer = env.get('NODEJS_IP') || '0.0.0.0';
+    var proxyPort = parseInt(env.get('NODEJS_PORT')) || 1337;
+
     crossroads.ignoreState = true;
     crossroads.bypassed.add((req, res) => {
       res.writeHead(404, {'Content-Type': 'text/html'});
       res.end('<html><body><h1>HTTP 404 - Page Not Found</h1><hr/><p>OutlineJS Server</p></body></html>');
     });
+
     http.createServer((req, res) => {
       var requestedUrl = urlModule.parse(req.url).pathname;
       RouteUtils.parseUrl(requestedUrl, req, res);
-    }).listen(proxyPort, proxyServer);
+    }).listen(proxyPort, proxyServer, function () {
+      console.log(`[ojs] Node.js is up and running on ${proxyServer}:${proxyPort}`);
+    });
   }
 
   static _listenClient() {
@@ -125,14 +130,8 @@ export class RouteUtils {
     });
   }
 
-  static reverse(state, params = {}, request = null) {
-    let language = settings.DEFAULT_LANGUAGE;
-
-    // when a request is present set language
-    // with the current request language
-    if (request !== null) {
-      language = request.i18n.language;
-    }
+  static reverse(state, request, params = {}) {
+    let language = request.language;
 
     // update the state with the current language
     state = language + ':' + state;
@@ -231,13 +230,13 @@ export class BaseRouter {
 
     if (Controller.loginRequired && !req.user) {
       try {
-        var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE, null, req);
+        var loginUrl = RouteUtils.reverse(settings.LOGIN_STATE, req, null);
       } catch (ex) {
         res.error(new Error(`State ${settings.LOGIN_STATE} is undefined`));
         return;
       }
-      var nextUrl = encodeURIComponent(req.absoluteUrl);
-      loginUrl = `${loginUrl}?next-url=${nextUrl}`;
+      var nextUrl = encodeURIComponent(req.url.href);
+      loginUrl = `${loginUrl}?next=${nextUrl}`;
       res.navigate(loginUrl);
       return;
     }

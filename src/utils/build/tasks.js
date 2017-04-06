@@ -129,6 +129,7 @@ export default class {
       .pipe(vinylSource(this.getMainFile()))
       .pipe(vinylBuffer())
       .pipe($.sourcemaps.init({loadMaps: true}))
+      .pipe($.uglify())
       .pipe($.sourcemaps.write('./')); // writes .map file
     if (clientMode) {
       bundle = bundle
@@ -164,8 +165,8 @@ export default class {
    */
   load() {
     this.gulp.task('ojs:env', (cb) => {
-      //only env vars with BROWSER_ prefix are exposed
-      var safeRegEx = new RegExp('^BROWSER_');
+      //only env vars with OJS_ prefix are exposed
+      var safeRegEx = new RegExp('^OJS_');
       var env = nconf.env().stores.env.store;
       var safeEnv = {};
       for (var k of Object.keys(env)) {
@@ -173,10 +174,11 @@ export default class {
           safeEnv[k.replace(safeRegEx, '')] = env[k];
         }
       }
+
       try {
         fs.mkdirSync('./.tmp/');
-      } catch (ex) {
-      } //eslint-disable-line no-empty
+      } catch (ex) { } //eslint-disable-line no-empty
+
       fs.writeFile('./.tmp/env.json', JSON.stringify(safeEnv), (err) => {
         if (err) {
           $.util.log(err);
@@ -240,7 +242,8 @@ export default class {
           require('autoprefixer')({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']})
         ]))
         .pipe($.concat('main.css'))
-        .pipe($.sourcemaps.write())
+        .pipe($.cssnano())
+        .pipe($.sourcemaps.write('./'))
         .pipe(this.gulp.dest('.tmp/styles'))
         .pipe(reload({stream: true}));
     });
@@ -256,15 +259,12 @@ export default class {
     this.gulp.task('ojs:html', ['ojs:js-build', 'ojs:styles'], () => {
       return this.gulp.src('project/*.html')
         .pipe($.useref({searchPath: ['.tmp', '.']}))
-        .pipe($.if('*.js', $.uglify()))
-        .pipe($.if('*.css', $.cssnano()))
         .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true})))
         .pipe(this.gulp.dest('dist'));
     });
 
     this.gulp.task('ojs:node-app', ['ojs:js-build'], () => {
       return this.gulp.src('.tmp/node-scripts/*.js')
-        .pipe($.uglify())
         .pipe(this.gulp.dest('dist/node-scripts'));
     });
 
@@ -367,7 +367,8 @@ export default class {
     });
 
     this.gulp.task('ojs:build', ['ojs:lint', 'ojs:test', 'ojs:html', 'ojs:node-app', 'ojs:images', 'ojs:fonts', 'ojs:extras', 'ojs:locale-build'], () => {
-      return this.gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
+      return this.gulp.src('dist/**/*')
+        .pipe($.size({title: 'build', gzip: true}));
     });
 
     this.gulp.task('ojs:serve', ['ojs:js-watch', 'ojs:styles', 'ojs:fonts', 'ojs:pot', 'ojs:locale-build', 'ojs:images-vendor'], () => {
@@ -387,10 +388,11 @@ export default class {
       ]).on('change', reload);
 
       var nmStarted = false;
-      var proxyServer = process.env.server || '0.0.0.0';
-      var proxyPort = parseInt(process.env.port) || 1337;
+      var proxyServer = process.env.OJS_NODEJS_IP || '0.0.0.0';
+      var proxyPort = parseInt(process.env.OJS_NODEJS_PORT) || 1337;
       var proxyTarget = `http://${proxyServer}:${proxyPort}/`;
-      var portWatch = parseInt(process.env.portWatch) || 9000;
+      var portWatch = parseInt(process.env.OJS_WATCH_PORT) || 9000;
+
       $.nodemon({
         script: './.tmp/node-scripts/main.js',
         watch: './.tmp/node-scripts/',
@@ -430,10 +432,11 @@ export default class {
     });
 
     this.gulp.task('ojs:serve-dist', () => {
-      var proxyServer = process.env.server || '0.0.0.0';
-      var proxyPort = parseInt(process.env.port) || 1337;
+      var proxyServer = process.env.OJS_NODEJS_IP || '0.0.0.0';
+      var proxyPort = parseInt(process.env.OJS_NODEJS_PORT) || 1338;
       var proxyTarget = `http://${proxyServer}:${proxyPort}/`;
-      var portWatchDist = parseInt(process.env.portWatch) || 9001;
+      var portWatchDist = parseInt(process.env.OJS_WATCH_PORT) || 9001;
+
       return $.nodemon({
         script: './dist/node-scripts/main.js',
         watch: './dist/node-scripts/'
