@@ -1,4 +1,4 @@
-## Next version (Unreleased)
+## 2.3.0
 
 FEATURES:
 
@@ -11,4 +11,3 @@ BUG FIXES:
 
   - cssnano is not running on ojs:styles gulp task
   - uglifyjs is not running on development gulp tasks pipeline
-
