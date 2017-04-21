@@ -252,7 +252,10 @@ class Url {
     let qs = require('qs');
 
     if (runtime.isClient) {
-      return qs.parse(this._clientUrl.search);
+      // replace only the first occurrence of ?
+      let search = this._clientUrl.search.replace('?', '');
+
+      return qs.parse(search);
     } else {
       return qs.parse(this._serverUrl.query);
     }
