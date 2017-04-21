@@ -1,3 +1,10 @@
+## 2.3.1
+
+BUG FIXES:
+
+  - query property on client url class is not working well, the first property has been parsed as '?propertyName' instead of 'propertyName'
+
+
 ## 2.3.0
 
 FEATURES:
