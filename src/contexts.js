@@ -216,7 +216,7 @@ class Url {
     if (runtime.isClient) {
       return this._clientUrl.origin;
     } else {
-      return `${this._serverUrl.protocol}//${this._serverUrl.hostname}`;
+      return `${this._serverUrl.protocol}//${this._serverUrl.host}`;
     }
   }
 

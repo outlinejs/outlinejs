@@ -1,3 +1,13 @@
+## 2.3.2
+
+BUG FIXES:
+
+  - origin property on url class is not return the same value on client / server
+  - @outlinejs-babel-jsxgettext when an object with property name as a numeric value the parsing fails
+  - @outlinejs-babel-jsxgettext when in a string there are multiple occurrence of _i18n: the created msgid on .po file
+    is wrong
+
+
 ## 2.3.1
 
 BUG FIXES:
