@@ -1,6 +1,6 @@
 {
   "name": "outlinejs",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "dependencies": {
     "@gulp-sourcemaps/map-sources": {
       "version": "1.0.0",
