@@ -16,6 +16,12 @@ var _conf = require('@outlinejs/conf');
 
 var _events = require('events');
 
+var _url = require('url');
+
+var _url2 = _interopRequireDefault(_url);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var RouterClass = null;
@@ -72,7 +78,8 @@ var Boot = function () {
       if (_conf.settings.ROUTING_USE_FRAGMENT) {
         var hasher = require('hasher');
         var parseHash = function parseHash(fragment) {
-          Boot.processUrl(fragment);
+          var location = _url2.default.parse(fragment);
+          Boot.processUrl(location.pathname);
         };
         hasher.prependHash = '';
         hasher.initialized.add(parseHash);

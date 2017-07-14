@@ -47,35 +47,37 @@ export class ResponseContext extends DecorableContext {
   }
 
   navigate(to, params = {}) {
-    let url; //eslint-disable-line no-shadow
-
+    let destinationUrl;
     try {
-      url = RouteUtils.reverse(to, this.request, params);
+      destinationUrl = RouteUtils.reverse(to, this.request, params);
     } catch (ex) {
-      url = to;
+      destinationUrl = to;
 
       if (runtime.isClient) {
-        window.location.href = url;
-
-        return;
+        // check if it's an absolute url
+        if (url.parse(destinationUrl).protocol) {
+          window.location.href = destinationUrl;
+          return;
+        }
       }
     }
 
     if (runtime.isClient) {
       if (settings.ROUTING_USE_FRAGMENT) {
         let hasher = require('hasher');
-        hasher.setHash(url);
+        hasher.prependHash = '';
+        hasher.setHash(destinationUrl);
       } else {
         if (settings.SERVER_SIDE_LINK_ONLY) {
-          window.location.href = url;
+          window.location.href = destinationUrl;
         } else {
           let history = require('html5-history-api');
-          history.pushState(null, null, url);
-          window.navigateEventEmitter.emit('navigate', url);
+          history.pushState(null, null, destinationUrl);
+          window.navigateEventEmitter.emit('navigate', destinationUrl);
         }
       }
     } else {
-      this.response.writeHead(302, {Location: url});
+      this.response.writeHead(302, {Location: destinationUrl});
       this.response.end();
     }
   }

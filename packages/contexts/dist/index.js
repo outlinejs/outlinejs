@@ -115,35 +115,37 @@ var ResponseContext = exports.ResponseContext = function (_DecorableContext) {
     value: function navigate(to) {
       var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      var url = void 0; //eslint-disable-line no-shadow
-
+      var destinationUrl = void 0;
       try {
-        url = _routing.Utils.reverse(to, this.request, params);
+        destinationUrl = _routing.Utils.reverse(to, this.request, params);
       } catch (ex) {
-        url = to;
+        destinationUrl = to;
 
         if (runtime.isClient) {
-          window.location.href = url;
-
-          return;
+          // check if it's an absolute url
+          if (_url2.default.parse(destinationUrl).protocol) {
+            window.location.href = destinationUrl;
+            return;
+          }
         }
       }
 
       if (runtime.isClient) {
         if (_conf.settings.ROUTING_USE_FRAGMENT) {
           var hasher = require('hasher');
-          hasher.setHash(url);
+          hasher.prependHash = '';
+          hasher.setHash(destinationUrl);
         } else {
           if (_conf.settings.SERVER_SIDE_LINK_ONLY) {
-            window.location.href = url;
+            window.location.href = destinationUrl;
           } else {
             var history = require('html5-history-api');
-            history.pushState(null, null, url);
-            window.navigateEventEmitter.emit('navigate', url);
+            history.pushState(null, null, destinationUrl);
+            window.navigateEventEmitter.emit('navigate', destinationUrl);
           }
         }
       } else {
-        this.response.writeHead(302, { Location: url });
+        this.response.writeHead(302, { Location: destinationUrl });
         this.response.end();
       }
     }

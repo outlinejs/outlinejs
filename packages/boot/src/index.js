@@ -6,6 +6,7 @@ import {_init as contextInit} from '@outlinejs/contexts';
 import {_init as confInit, settings} from '@outlinejs/conf';
 import {runtime, RequestContext, ResponseContext} from '@outlinejs/contexts';
 import {EventEmitter} from 'events';
+import url from 'url';
 
 
 let RouterClass = null;
@@ -51,7 +52,8 @@ export default class Boot {
     if (settings.ROUTING_USE_FRAGMENT) {
       let hasher = require('hasher');
       let parseHash = (fragment) => {
-        Boot.processUrl(fragment);
+        let location = url.parse(fragment);
+        Boot.processUrl(location.pathname);
       };
       hasher.prependHash = '';
       hasher.initialized.add(parseHash);
