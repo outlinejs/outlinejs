@@ -25,6 +25,8 @@ var _conf = require('@outlinejs/conf');
 
 var _routing = require('@outlinejs/routing');
 
+var _events = require('events');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -133,7 +135,6 @@ var ResponseContext = exports.ResponseContext = function (_DecorableContext) {
       if (runtime.isClient) {
         if (_conf.settings.ROUTING_USE_FRAGMENT) {
           var hasher = require('hasher');
-          hasher.prependHash = '';
           hasher.setHash(destinationUrl);
         } else {
           if (_conf.settings.SERVER_SIDE_LINK_ONLY) {
@@ -268,6 +269,7 @@ var RuntimeContext = function () {
   function RuntimeContext(containerNodeId) {
     _classCallCheck(this, RuntimeContext);
 
+    this._routerClass = null;
     this._containerNodeId = containerNodeId;
     this._serverRenderContainerPattern = new RegExp('(id="' + containerNodeId + '"[^>]*>?)(.*?)(</)');
     this._middleware = [];
@@ -350,6 +352,103 @@ var RuntimeContext = function () {
       return trace;
     }
   }, {
+    key: 'runServer',
+    value: function runServer() {
+      var _this4 = this;
+
+      var http = require('http');
+      var urlModule = require('url');
+      var proxyServer = '0.0.0.0'; //process.env.server || '0.0.0.0';
+      var proxyPort = 1337; //parseInt(process.env.port) || 1337;
+      http.createServer(function (req, res) {
+        var requestedUrl = urlModule.parse(req.url).pathname;
+        _this4.processUrl(requestedUrl, req, res);
+      }).listen(proxyPort, proxyServer);
+    }
+  }, {
+    key: 'runClient',
+    value: function runClient() {
+      var _this5 = this;
+
+      if (_conf.settings.ROUTING_USE_FRAGMENT) {
+        var hasher = require('hasher');
+        var parseHash = function parseHash(fragment) {
+          var location = _url2.default.parse(fragment);
+          _this5.processUrl(location.pathname);
+        };
+        hasher.prependHash = '';
+        hasher.initialized.add(parseHash);
+        hasher.changed.add(parseHash);
+        hasher.init();
+      } else {
+        // create 'navigate' window event
+        window.navigateEventEmitter = new _events.EventEmitter();
+
+        require('html5-history-api');
+        var location = window.history.location || window.location;
+        var eventDef = window.addEventListener ? ['addEventListener', ''] : ['attachEvent', 'on'];
+        window[eventDef[0]](eventDef[1] + 'popstate', function () {
+          _this5.processUrl(location.pathname);
+        }, false);
+        window.navigateEventEmitter.on('navigate', function () {
+          _this5.processUrl(location.pathname);
+        });
+        this.processUrl(location.pathname);
+      }
+    }
+  }, {
+    key: 'processUrl',
+    value: function processUrl(path) {
+      var _this6 = this;
+
+      var req = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var res = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      // add request context props to request
+      var requestContext = new RequestContext(req);
+      requestContext.decorate(req);
+
+      var responseContext = new ResponseContext(res, req);
+      responseContext.decorate(res);
+
+      //run the middleware
+      var middlewarePromises = [];
+
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
+
+      try {
+        for (var _iterator4 = runtime.middleware[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var middleware = _step4.value;
+
+          //processRequest
+          if (middleware.processRequest) {
+            middlewarePromises.push(middleware.processRequest(req, res));
+          }
+        }
+      } catch (err) {
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion4 && _iterator4.return) {
+            _iterator4.return();
+          }
+        } finally {
+          if (_didIteratorError4) {
+            throw _iteratorError4;
+          }
+        }
+      }
+
+      Promise.all(middlewarePromises).then(function () {
+        _this6.routerClass.dispatch(path, req, res);
+      }, function (error) {
+        res.error(error);
+      });
+    }
+  }, {
     key: 'middleware',
     get: function get() {
       return this._middleware;
@@ -387,11 +486,26 @@ var RuntimeContext = function () {
     set: function set(value) {
       this._currentClientResponse = value;
     }
+  }, {
+    key: 'routerClass',
+    get: function get() {
+      return this._routerClass;
+    },
+    set: function set(value) {
+      this._routerClass = value;
+    }
   }]);
 
   return RuntimeContext;
 }();
 
-function _init(containerNodeId) {
+function _init(containerNodeId, routerClass) {
   exports.runtime = runtime = new RuntimeContext(containerNodeId);
+  routerClass.init();
+  runtime.routerClass = routerClass;
+  if (runtime.isClient) {
+    runtime.runClient();
+  } else {
+    runtime.runServer();
+  }
 }

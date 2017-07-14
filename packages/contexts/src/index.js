@@ -3,6 +3,7 @@ import url from 'url';
 import Translation from '@outlinejs/translation';
 import {settings} from '@outlinejs/conf';
 import {Utils as RouteUtils} from '@outlinejs/routing';
+import {EventEmitter} from 'events';
 
 export let runtime = null;
 
@@ -65,7 +66,6 @@ export class ResponseContext extends DecorableContext {
     if (runtime.isClient) {
       if (settings.ROUTING_USE_FRAGMENT) {
         let hasher = require('hasher');
-        hasher.prependHash = '';
         hasher.setHash(destinationUrl);
       } else {
         if (settings.SERVER_SIDE_LINK_ONLY) {
@@ -170,6 +170,7 @@ export class RequestContext extends DecorableContext {
 
 class RuntimeContext {
   constructor(containerNodeId) {
+    this._routerClass = null;
     this._containerNodeId = containerNodeId;
     this._serverRenderContainerPattern = new RegExp(`(id=\"${containerNodeId}\"[^\>]*>?)(.*?)(<\/)`);
     this._middleware = [];
@@ -237,8 +238,87 @@ class RuntimeContext {
   set currentClientResponse(value) {
     this._currentClientResponse = value;
   }
+
+  get routerClass() {
+    return this._routerClass;
+  }
+
+  set routerClass(value) {
+    this._routerClass = value;
+  }
+
+  runServer() {
+    let http = require('http');
+    let urlModule = require('url');
+    let proxyServer = '0.0.0.0';//process.env.server || '0.0.0.0';
+    let proxyPort = 1337;//parseInt(process.env.port) || 1337;
+    http.createServer((req, res) => {
+      let requestedUrl = urlModule.parse(req.url).pathname;
+      this.processUrl(requestedUrl, req, res);
+    }).listen(proxyPort, proxyServer);
+  }
+
+  runClient() {
+    if (settings.ROUTING_USE_FRAGMENT) {
+      let hasher = require('hasher');
+      let parseHash = (fragment) => {
+        let location = url.parse(fragment);
+        this.processUrl(location.pathname);
+      };
+      hasher.prependHash = '';
+      hasher.initialized.add(parseHash);
+      hasher.changed.add(parseHash);
+      hasher.init();
+    } else {
+      // create 'navigate' window event
+      window.navigateEventEmitter = new EventEmitter();
+
+      require('html5-history-api');
+      let location = window.history.location || window.location;
+      let eventDef = window.addEventListener ? ['addEventListener', ''] : ['attachEvent', 'on'];
+      window[eventDef[0]](`${eventDef[1]}popstate`, () => {
+        this.processUrl(location.pathname);
+      }, false);
+      window.navigateEventEmitter.on('navigate', () => {
+        this.processUrl(location.pathname);
+      });
+      this.processUrl(location.pathname);
+    }
+  }
+
+  processUrl(path, req = {}, res = {}) {
+    // add request context props to request
+    let requestContext = new RequestContext(req);
+    requestContext.decorate(req);
+
+    let responseContext = new ResponseContext(res, req);
+    responseContext.decorate(res);
+
+    //run the middleware
+    let middlewarePromises = [];
+
+    for (let middleware of runtime.middleware) {
+      //processRequest
+      if (middleware.processRequest) {
+        middlewarePromises.push(middleware.processRequest(req, res));
+      }
+    }
+
+    Promise.all(middlewarePromises).then(() => {
+      this.routerClass.dispatch(path, req, res);
+    }, (error) => {
+      res.error(error);
+    });
+  }
 }
 
-export function _init(containerNodeId) {
+export function _init(containerNodeId, routerClass) {
   runtime = new RuntimeContext(containerNodeId);
+  routerClass.init();
+  runtime.routerClass = routerClass;
+  if (runtime.isClient) {
+    runtime.runClient();
+  } else {
+    runtime.runServer();
+  }
 }

@@ -18,9 +18,7 @@
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
     "@outlinejs/conf": "^3.0.3",
-    "@outlinejs/contexts": "^3.0.15",
-    "hasher": "^1.2.0",
-    "html5-history-api": "^4.2.7"
+    "@outlinejs/contexts": "^3.0.15"
   },
   "publishConfig": {
     "access": "public"

@@ -6,19 +6,19 @@
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@outlinejs/conf/-/conf-3.0.3.tgz#44f7a3cda09843746baea84fa14f295c8586dbb2"
 
-"@outlinejs/contexts@^3.0.8":
-  version "3.0.8"
-  resolved "https://registry.yarnpkg.com/@outlinejs/contexts/-/contexts-3.0.8.tgz#5f761a632cc01cac488cb91a9293b02b9e9dc254"
+"@outlinejs/contexts@^3.0.15":
+  version "3.0.15"
+  resolved "https://registry.yarnpkg.com/@outlinejs/contexts/-/contexts-3.0.15.tgz#f312809795f01a14263affe5fc0987e6ab2f392d"
   dependencies:
     "@outlinejs/conf" "^3.0.3"
-    "@outlinejs/route-utils" "^3.0.8"
+    "@outlinejs/routing" "^3.0.10"
     "@outlinejs/translation" "^3.0.3"
     hasher "^1.2.0"
     html5-history-api "^4.2.7"
 
-"@outlinejs/route-utils@^3.0.8":
-  version "3.0.8"
-  resolved "https://registry.yarnpkg.com/@outlinejs/route-utils/-/route-utils-3.0.8.tgz#65aad8852673576c7a04e7ede6cbadb549a55e8c"
+"@outlinejs/routing@^3.0.10":
+  version "3.0.10"
+  resolved "https://registry.yarnpkg.com/@outlinejs/routing/-/routing-3.0.10.tgz#2e9f0faf7dce61ec5f61cec924da3f33a5a858a8"
   dependencies:
     "@outlinejs/conf" "^3.0.3"
 
