@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/boot",
-  "version": "3.0.17",
+  "version": "3.0.18",
   "description": "OutlineJS Boot Package",
   "main": "dist/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
     "@outlinejs/conf": "^3.0.3",
-    "@outlinejs/contexts": "^3.0.17"
+    "@outlinejs/contexts": "^3.0.18"
   },
   "publishConfig": {
     "access": "public"

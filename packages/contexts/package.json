@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/contexts",
-  "version": "3.0.17",
+  "version": "3.0.18",
   "description": "OutlineJS Contexts (Request/Response/Runtime) Package",
   "main": "dist/index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "hasher": "^1.2.0",
     "html5-history-api": "^4.2.7",
     "@outlinejs/translation": "^3.0.3",
-    "@outlinejs/routing": "^3.0.10",
+    "@outlinejs/routing": "^3.0.18",
     "@outlinejs/conf": "^3.0.3"
   },
   "publishConfig": {
