@@ -3,14 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.IncludeDefinition = exports.Utils = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-exports.i18nUrl = i18nUrl;
+exports.url = url;
 exports.include = include;
-
-var _conf = require('@outlinejs/conf');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -26,17 +23,15 @@ var Utils = exports.Utils = function () {
     value: function reverse(state, request) {
       var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      // update the state with the current language
-      state = request.language + ':' + state;
-
       var callback = _stateRouteMapping[state];
       if (!callback) {
         throw 'State \'' + state + '\' is not registered.';
       }
-
-      var url = callback(params);
-
-      return '/' + url;
+      var reversedUrl = callback(params);
+      if (reversedUrl === '/') {
+        reversedUrl = '';
+      }
+      return '/' + reversedUrl;
     }
   }, {
     key: 'mapRoute',
@@ -48,8 +43,6 @@ var Utils = exports.Utils = function () {
     value: function activeCssClass(state, request) {
       var cssClass = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'active';
 
-      // update the state with the current language
-      state = request.language + ':' + state;
       if (request && request.isState(state)) {
         return cssClass;
       }
@@ -99,14 +92,9 @@ var IncludeDefinition = exports.IncludeDefinition = function () {
   return IncludeDefinition;
 }();
 
-function i18nUrl(state, controller) {
-  var languages = _conf.settings.LANGUAGES;
+function url(state, controller) {
   var urlDefinition = [];
-
-  languages.forEach(function (language) {
-    urlDefinition.push(new UrlDefinition(language + ':' + state, controller, true));
-  });
-
+  urlDefinition.push(new UrlDefinition(state, controller, true));
   return urlDefinition;
 }
 

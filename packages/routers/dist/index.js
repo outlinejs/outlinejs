@@ -11,8 +11,6 @@ var _crossroads = require('crossroads');
 
 var _crossroads2 = _interopRequireDefault(_crossroads);
 
-var _jed = require('jed');
-
 var _contexts = require('@outlinejs/contexts');
 
 var _conf = require('@outlinejs/conf');
@@ -71,8 +69,7 @@ var BaseRouter = exports.BaseRouter = function () {
             // init a sub router modules
             urlPattern.router.loadRoutes('' + prefix + item);
           } else {
-            // urlPattern is an array of urlDefinition one
-            // for each supported language
+            // urlPattern is an array of urlDefinition
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
             var _iteratorError2 = undefined;
@@ -81,73 +78,11 @@ var BaseRouter = exports.BaseRouter = function () {
               var _loop = function _loop() {
                 var urlDefinition = _step2.value;
 
-                //console.log('urlDefinition', urlDefinition);
 
-                // language can be safety detect from first part
-                // of state
-                var language = urlDefinition.state.split(':')[0];
-                var routeUrl = language + '/' + prefix + item;
-
-                // check if the current url keyword has been translated,
-                // if there is not a translation will be used the default routeUrl
-                // value
-                try {
-                  var getTextFileValue = language.replace('-', '_');
-                  var i18n = new _jed.Jed(require('__locale_' + getTextFileValue));
-                  var i18nUrlSegments = ('' + prefix + item).split('_i18n:');
-                  var tmpRouteUrl = '';
-
-                  //console.log('Split', i18nUrlSegments);
-
-                  var _iteratorNormalCompletion3 = true;
-                  var _didIteratorError3 = false;
-                  var _iteratorError3 = undefined;
-
-                  try {
-                    for (var _iterator3 = i18nUrlSegments[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                      var i18nUrlSegment = _step3.value;
-
-                      //console.log('i18nUrlSegment', i18nUrlSegment);
-
-                      // skip the empty segment
-                      if (i18nUrlSegment === '') {
-                        continue;
-                      }
-
-                      var msgId = '_i18n:' + i18nUrlSegment.replace(/\/$/, '');
-
-                      tmpRouteUrl = tmpRouteUrl + i18n.gettext(msgId) + '/';
-
-                      //console.log('translate', `${msgId}`);
-                      //console.log('tmpRouteUrl', `${tmpRouteUrl}`);
-                    }
-
-                    // add the current language
-                  } catch (err) {
-                    _didIteratorError3 = true;
-                    _iteratorError3 = err;
-                  } finally {
-                    try {
-                      if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                        _iterator3.return();
-                      }
-                    } finally {
-                      if (_didIteratorError3) {
-                        throw _iteratorError3;
-                      }
-                    }
-                  }
-
-                  routeUrl = language + '/' + tmpRouteUrl;
-
-                  // sanity check on /
-                  if (!routeUrl.endsWith('/')) {
-                    routeUrl = routeUrl + '/';
-                  }
-
-                  //console.log('routeUrl', `${routeUrl}`);
-                } catch (ex) {
-                  console.warn('The following error has occurred translating \'' + prefix + item + '\': ' + ex);
+                var routeUrl = '' + prefix + item;
+                // sanity check on /
+                if (!routeUrl.endsWith('/')) {
+                  routeUrl = routeUrl + '/';
                 }
 
                 var crossroadsRoute = _crossroads2.default.addRoute(routeUrl, function () {

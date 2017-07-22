@@ -1,20 +1,16 @@
-import {settings} from '@outlinejs/conf';
-
 let _stateRouteMapping = {};
 
 export class Utils {
   static reverse(state, request, params = {}) {
-    // update the state with the current language
-    state = request.language + ':' + state;
-
     let callback = _stateRouteMapping[state];
     if (!callback) {
       throw `State '${state}' is not registered.`;
     }
-
-    let url = callback(params);
-
-    return `/${url}`;
+    let reversedUrl = callback(params);
+    if (reversedUrl === '/') {
+      reversedUrl = '';
+    }
+    return `/${reversedUrl}`;
   }
 
   static mapRoute(state, callback) {
@@ -22,8 +18,6 @@ export class Utils {
   }
 
   static activeCssClass(state, request, cssClass = 'active') {
-    // update the state with the current language
-    state = request.language + ':' + state;
     if (request && request.isState(state)) {
       return cssClass;
     }
@@ -55,14 +49,9 @@ export class IncludeDefinition {
   }
 }
 
-export function i18nUrl(state, controller) {
-  let languages = settings.LANGUAGES;
+export function url(state, controller) {
   let urlDefinition = [];
-
-  languages.forEach(function (language) {
-    urlDefinition.push(new UrlDefinition(language + ':' + state, controller, true));
-  });
-
+  urlDefinition.push(new UrlDefinition(state, controller, true));
   return urlDefinition;
 }
 

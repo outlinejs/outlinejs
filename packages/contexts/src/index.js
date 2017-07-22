@@ -188,7 +188,7 @@ class RuntimeContext {
       this._renderContainerObject = html;
     }
     for (let mid of settings.MIDDLEWARE) {
-      this._middleware.push(new mid.default()); //eslint-disable-line new-cap
+      this._middleware.push(new mid()); //eslint-disable-line new-cap
     }
     if (this.isServer) {
       Error.prepareStackTrace = (error, stack) => {

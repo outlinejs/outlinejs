@@ -1,5 +1,4 @@
 import crossroads from 'crossroads';
-import {Jed} from 'jed';
 import {runtime} from '@outlinejs/contexts';
 import {settings} from '@outlinejs/conf';
 import {IncludeDefinition, Utils as RouteUtils} from '@outlinejs/routing';
@@ -33,54 +32,13 @@ export class BaseRouter {
         // init a sub router modules
         urlPattern.router.loadRoutes(`${prefix}${item}`);
       } else {
-        // urlPattern is an array of urlDefinition one
-        // for each supported language
+        // urlPattern is an array of urlDefinition
         for (let urlDefinition of urlPattern) {
-          //console.log('urlDefinition', urlDefinition);
 
-          // language can be safety detect from first part
-          // of state
-          let language = urlDefinition.state.split(':')[0];
-          let routeUrl = `${language}/${prefix}${item}`;
-
-          // check if the current url keyword has been translated,
-          // if there is not a translation will be used the default routeUrl
-          // value
-          try {
-            let getTextFileValue = language.replace('-', '_');
-            let i18n = new Jed(require(`__locale_${getTextFileValue}`));
-            let i18nUrlSegments = `${prefix}${item}`.split('_i18n:');
-            let tmpRouteUrl = '';
-
-            //console.log('Split', i18nUrlSegments);
-
-            for (let i18nUrlSegment of i18nUrlSegments) {
-              //console.log('i18nUrlSegment', i18nUrlSegment);
-
-              // skip the empty segment
-              if (i18nUrlSegment === '') {
-                continue;
-              }
-
-              let msgId = '_i18n:' + i18nUrlSegment.replace(/\/$/, '');
-
-              tmpRouteUrl = tmpRouteUrl + i18n.gettext(msgId) + '/';
-
-              //console.log('translate', `${msgId}`);
-              //console.log('tmpRouteUrl', `${tmpRouteUrl}`);
-            }
-
-            // add the current language
-            routeUrl = `${language}/${tmpRouteUrl}`;
-
-            // sanity check on /
-            if (!routeUrl.endsWith('/')) {
-              routeUrl = `${routeUrl}/`;
-            }
-
-            //console.log('routeUrl', `${routeUrl}`);
-          } catch (ex) {
-            console.warn(`The following error has occurred translating '${prefix}${item}': ${ex}`);
+          let routeUrl = `${prefix}${item}`;
+          // sanity check on /
+          if (!routeUrl.endsWith('/')) {
+            routeUrl = `${routeUrl}/`;
           }
 
           let crossroadsRoute = crossroads.addRoute(routeUrl, (...args) => { //eslint-disable-line no-loop-func

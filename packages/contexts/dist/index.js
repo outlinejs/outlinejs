@@ -294,7 +294,7 @@ var RuntimeContext = function () {
       for (var _iterator2 = _conf.settings.MIDDLEWARE[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
         var mid = _step2.value;
 
-        this._middleware.push(new mid.default()); //eslint-disable-line new-cap
+        this._middleware.push(new mid()); //eslint-disable-line new-cap
       }
     } catch (err) {
       _didIteratorError2 = true;
