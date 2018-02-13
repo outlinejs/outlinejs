@@ -304,7 +304,13 @@ class RuntimeContext {
       }
     }
 
-    Promise.all(middlewarePromises).then(() => {
+    middlewarePromises.reduce((promiseChain, current) => {
+      return promiseChain.then(chainResults =>
+        current.then(currentResult =>
+          [...chainResults, currentResult]
+        )
+      );
+    }, Promise.resolve([])).then(() => {
       this.routerClass.dispatch(path, req, res);
     }, (error) => {
       res.error(error);
