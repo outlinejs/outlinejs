@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Remarkable from 'remarkable';
 import Helmet from 'react-helmet';
 import {Utils as RouteUtils} from '@outlinejs/routing';
@@ -13,8 +14,8 @@ export class BaseComponent extends React.Component {
 
   static get contextTypes() {
     return {
-      request: React.PropTypes.object,
-      response: React.PropTypes.object
+      request: PropTypes.object,
+      response: PropTypes.object
     };
   }
 

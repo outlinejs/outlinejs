@@ -444,12 +444,6 @@ var RuntimeContext = function () {
         }
       }
 
-      Promise.all(middlewarePromises).then(function () {
-        _this6.routerClass.dispatch(path, req, res);
-      }, function (error) {
-        res.error(error);
-      });
-
       middlewarePromises.reduce(function (promiseChain, current) {
         return promiseChain.then(function (chainResults) {
           return current.then(function (currentResult) {

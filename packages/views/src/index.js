@@ -1,11 +1,12 @@
 import { BaseComponent } from '@outlinejs/components';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export class BaseView extends BaseComponent {
   static get childContextTypes() {
     return {
-      request: React.PropTypes.object,
-      response: React.PropTypes.object
+      request: PropTypes.object,
+      response: PropTypes.object
     };
   }
 

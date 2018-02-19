@@ -13,6 +13,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _remarkable = require('remarkable');
 
 var _remarkable2 = _interopRequireDefault(_remarkable);
@@ -96,8 +100,8 @@ var BaseComponent = exports.BaseComponent = function (_React$Component) {
     key: 'contextTypes',
     get: function get() {
       return {
-        request: _react2.default.PropTypes.object,
-        response: _react2.default.PropTypes.object
+        request: _propTypes2.default.object,
+        response: _propTypes2.default.object
       };
     }
   }]);
