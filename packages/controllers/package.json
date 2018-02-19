@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/controllers",
-  "version": "3.0.19",
+  "version": "3.0.20-0",
   "description": "OutlineJS Controllers Package",
   "main": "dist/index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "react-dom": "^15.4.2"
   },
   "dependencies": {
-    "@outlinejs/contexts": "^3.0.19",
+    "@outlinejs/contexts": "^3.0.20-0",
     "react-helmet": "^4.0.0"
   },
   "publishConfig": {

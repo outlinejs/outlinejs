@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/middleware",
-  "version": "3.0.19",
+  "version": "3.0.20-0",
   "description": "OutlineJS Middleware Modules",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,7 +21,7 @@
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
     "@outlinejs/conf": "^3.0.3",
-    "@outlinejs/contexts": "^3.0.19",
+    "@outlinejs/contexts": "^3.0.20-0",
     "accept-language": "^3.0.15",
     "cookie": "^0.3.1",
     "js-cookie": "^2.1.3"

@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/components",
-  "version": "3.0.18",
+  "version": "3.0.20-0",
   "description": "OutlineJS Components Collection",
   "main": "dist/index.js",
   "scripts": {
@@ -17,12 +17,13 @@
   },
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "peerDependencies": {
-    "react": "^15.4.2"
+    "prop-types": "^15.5.7",
+    "react": "^15.5.0"
   },
   "dependencies": {
+    "@outlinejs/routing": "^3.0.18",
     "react-helmet": "^4.0.0",
-    "remarkable": "^1.7.1",
-    "@outlinejs/routing": "^3.0.18"
+    "remarkable": "^1.7.1"
   },
   "publishConfig": {
     "access": "public"

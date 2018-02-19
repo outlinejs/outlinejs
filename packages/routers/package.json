@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/routers",
-  "version": "3.0.19",
+  "version": "3.0.20-0",
   "description": "OutlineJS Routing Package",
   "main": "dist/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
     "@outlinejs/conf": "^3.0.3",
-    "@outlinejs/contexts": "^3.0.19",
+    "@outlinejs/contexts": "^3.0.20-0",
     "@outlinejs/routing": "^3.0.18",
     "crossroads": "^0.12.2",
     "hasher": "^1.2.0",
