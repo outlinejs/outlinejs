@@ -328,3 +328,4 @@ export function _init(containerNodeId, routerClass) {
     runtime.runServer();
   }
 }
+
