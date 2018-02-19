@@ -1,6 +1,6 @@
 {
   "name": "outlinejs",
-  "version": "3.0.22",
+  "version": "3.0.23",
   "description": "OutlineJS nano framework",
   "main": "dist/index.js",
   "scripts": {
@@ -17,13 +17,13 @@
   },
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
-    "@outlinejs/boot": "^3.0.22",
+    "@outlinejs/boot": "^3.0.23",
     "@outlinejs/components": "^3.0.22",
     "@outlinejs/conf": "^3.0.3",
-    "@outlinejs/contexts": "^3.0.22",
-    "@outlinejs/controllers": "^3.0.22",
-    "@outlinejs/middleware": "^3.0.22",
-    "@outlinejs/routers": "^3.0.22",
+    "@outlinejs/contexts": "^3.0.23",
+    "@outlinejs/controllers": "^3.0.23",
+    "@outlinejs/middleware": "^3.0.23",
+    "@outlinejs/routers": "^3.0.23",
     "@outlinejs/routing": "^3.0.18",
     "@outlinejs/translation": "^3.0.3",
     "@outlinejs/views": "^3.0.22"
