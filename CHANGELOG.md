@@ -1,3 +1,11 @@
+## 2.4.0
+
+FEATURES:
+
+  - disable cssnano on ojs:styles gulp task because is really slow
+  - disable uglifyjs on development gulp tasks because is really slow
+  
+
 ## 2.3.2
 
 BUG FIXES:

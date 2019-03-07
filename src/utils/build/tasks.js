@@ -129,7 +129,6 @@ export default class {
       .pipe(vinylSource(this.getMainFile()))
       .pipe(vinylBuffer())
       .pipe($.sourcemaps.init({loadMaps: true}))
-      .pipe($.uglify())
       .pipe($.sourcemaps.write('./')); // writes .map file
     if (clientMode) {
       bundle = bundle
@@ -242,7 +241,6 @@ export default class {
           require('autoprefixer')({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']})
         ]))
         .pipe($.concat('main.css'))
-        .pipe($.cssnano())
         .pipe($.sourcemaps.write('./'))
         .pipe(this.gulp.dest('.tmp/styles'))
         .pipe(reload({stream: true}));
@@ -259,12 +257,15 @@ export default class {
     this.gulp.task('ojs:html', ['ojs:js-build', 'ojs:styles'], () => {
       return this.gulp.src('project/*.html')
         .pipe($.useref({searchPath: ['.tmp', '.']}))
+        .pipe($.if('*.js', $.uglify()))
+        .pipe($.if('*.css', $.cssnano()))
         .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true})))
         .pipe(this.gulp.dest('dist'));
     });
 
     this.gulp.task('ojs:node-app', ['ojs:js-build'], () => {
       return this.gulp.src('.tmp/node-scripts/*.js')
+        .pipe($.uglify())
         .pipe(this.gulp.dest('dist/node-scripts'));
     });
 
