@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/contexts",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "OutlineJS Contexts (Request/Response/Runtime) Package",
   "main": "dist/index.js",
   "scripts": {
@@ -17,9 +17,9 @@
   },
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
-    "@outlinejs/conf": "^3.0.3",
-    "@outlinejs/routing": "^3.0.18",
-    "@outlinejs/translation": "^3.0.3",
+    "@outlinejs/conf": "^4.0.0",
+    "@outlinejs/routing": "^4.0.0",
+    "@outlinejs/translation": "^4.0.0",
     "hasher": "^1.2.0",
     "html5-history-api": "^4.2.10"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/views",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "OutlineJS Base Views",
   "main": "dist/index.js",
   "scripts": {
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
   "dependencies": {
-    "@outlinejs/components": "^3.0.24"
+    "@outlinejs/components": "^4.0.0"
   },
   "publishConfig": {
     "access": "public"
