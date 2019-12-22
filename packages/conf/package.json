@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/conf",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "description": "OutlineJS Configuration Package",
   "main": "dist/index.js",
   "scripts": {

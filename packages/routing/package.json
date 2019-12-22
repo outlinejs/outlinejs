@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/routing",
-  "version": "3.0.18",
+  "version": "3.1.0",
   "description": "OutlineJS Routing",
   "main": "dist/index.js",
   "scripts": {

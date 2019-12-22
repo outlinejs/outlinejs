@@ -1,4 +1,8 @@
-export let settings = null;
+export let settings = new Proxy({}, {
+  get(target, name) {
+    return global.__ojsSettings[name];
+  }
+});
 
 export class BaseSettings {
   get MIDDLEWARE() {
@@ -31,25 +35,6 @@ export class BaseSettings {
   }
 }
 
-
-let _env;
-
-try {
-  _env = require('__outline_env');
-} catch (ex) {
-  _env = {};
-}
-
-if (!_env) {
-  _env = {};
-}
-
-export class Env {
-  static get(value) {
-    return _env[value];
-  }
-}
-
 export function _init(settingsClass) {
-  settings = new settingsClass(); //eslint-disable-line new-cap
+  global.__ojsSettings = new settingsClass(); //eslint-disable-line new-cap
 }

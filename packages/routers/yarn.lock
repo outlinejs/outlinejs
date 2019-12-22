@@ -14,9 +14,10 @@ hasher@^1.2.0:
   dependencies:
     signals ">0.7 <2.0"
 
-html5-history-api@^4.2.7:
-  version "4.2.8"
-  resolved "https://registry.yarnpkg.com/html5-history-api/-/html5-history-api-4.2.8.tgz#3ebbc38e36cae0dc410f74c20fdd5d76d93e96a8"
+html5-history-api@^4.2.10:
+  version "4.2.10"
+  resolved "https://registry.yarnpkg.com/html5-history-api/-/html5-history-api-4.2.10.tgz#fa8d0ddd2f11711b624e8e4f79ea6dc271ab672b"
+  integrity sha512-ZSytVcNmzpaOiLhBppxYPYK+LIYIZTkELeXOa6MbJwbZIDLPkWIEZRKQ+YQj8yVap37vda+SSesqgU1Ld8QCvA==
 
 jed@^1.1.1:
   version "1.1.1"

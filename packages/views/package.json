@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/views",
-  "version": "3.0.24",
+  "version": "3.1.0",
   "description": "OutlineJS Base Views",
   "main": "dist/index.js",
   "scripts": {
@@ -16,10 +16,6 @@
     "url": "https://github.com/outlinejs/outlinejs/issues"
   },
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
-  "peerDependencies": {
-    "prop-types": "^15.5.7",
-    "react": "^15.5.0"
-  },
   "dependencies": {
     "@outlinejs/components": "^3.0.24"
   },

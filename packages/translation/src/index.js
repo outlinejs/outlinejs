@@ -1,10 +1,18 @@
 import Jed from 'jed';
 
-let dictionaries = {};
+global.__ojsTranslationDictionaries = {};
 
 export default class {
   constructor() {
     this._language = null;
+  }
+
+  static addTranslation(translation) {
+    const trans = new Jed(translation);
+    // patch language value with _ (separator used by gettext)
+    // instead of - (separator used by W3C)
+    const lang = trans.options.locale_data.messages[''].lang.replace('_', '-');
+    global.__ojsTranslationDictionaries[lang] = trans;
   }
 
   get language() {
@@ -12,32 +20,23 @@ export default class {
   }
 
   set language(value) {
-    // patch language value with _ (separator used by gettext)
-    // instead of - (separator used by W3C)
-    let getTextFileValue = value.replace('-', '_');
-
-    if (!dictionaries[value]) {
-      try {
-        dictionaries[value] = new Jed(require(`__locale_${getTextFileValue}`));
-      } catch (ex) {
-        console.warn(`Language with code ${value} is not available, the following error has occurred: ${ex}`);
-      }
+    if (!global.__ojsTranslationDictionaries[value]) {
+      console.warn(`Language with code ${value} is not available.`);
     }
-
     this._language = value;
   }
 
   gettext(msgid) {
-    let currentDictionary = dictionaries[this._language];
-
+    let currentDictionary = global.__ojsTranslationDictionaries[this._language];
     if (currentDictionary) {
+      console.log(currentDictionary.gettext(msgid));
       return currentDictionary.gettext(msgid);
     }
     return msgid;
   }
 
   ngettext(singular, plural, count) {
-    let currentDictionary = dictionaries[this._language];
+    let currentDictionary = global.__ojsTranslationDictionaries[this._language];
     if (currentDictionary) {
       return currentDictionary.ngettext(singular, plural, count);
     }
@@ -49,7 +48,7 @@ export default class {
   }
 
   pgettext(context, msgid) {
-    let currentDictionary = dictionaries[this._language];
+    let currentDictionary = global.__ojsTranslationDictionaries[this._language];
     if (currentDictionary) {
       return currentDictionary.pgettext(context, msgid);
     }
@@ -57,7 +56,7 @@ export default class {
   }
 
   npgettext(context, singular, plural, count) {
-    let currentDictionary = dictionaries[this._language];
+    let currentDictionary = global.__ojsTranslationDictionaries[this._language];
     if (currentDictionary) {
       return currentDictionary.npgettext(context, singular, plural, count);
     }

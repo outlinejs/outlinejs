@@ -1,86 +1,94 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Link = exports.Head = exports.BaseComponent = undefined;
+exports.Link = exports.Head = exports.BaseComponent = void 0;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _react = _interopRequireDefault(require("react"));
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _react = require('react');
+var _remarkable = _interopRequireDefault(require("remarkable"));
 
-var _react2 = _interopRequireDefault(_react);
+var _reactHelmet = _interopRequireDefault(require("react-helmet"));
 
-var _propTypes = require('prop-types');
+var _routing = require("@outlinejs/routing");
 
-var _propTypes2 = _interopRequireDefault(_propTypes);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _remarkable = require('remarkable');
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-var _remarkable2 = _interopRequireDefault(_remarkable);
-
-var _reactHelmet = require('react-helmet');
-
-var _reactHelmet2 = _interopRequireDefault(_reactHelmet);
-
-var _routing = require('@outlinejs/routing');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var BaseComponent = exports.BaseComponent = function (_React$Component) {
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var BaseComponent =
+/*#__PURE__*/
+function (_React$Component) {
   _inherits(BaseComponent, _React$Component);
 
   function BaseComponent() {
-    var _ref;
+    var _getPrototypeOf2;
+
+    var _this;
 
     _classCallCheck(this, BaseComponent);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    var _this = _possibleConstructorReturn(this, (_ref = BaseComponent.__proto__ || Object.getPrototypeOf(BaseComponent)).call.apply(_ref, [this].concat(args)));
-
+    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(BaseComponent)).call.apply(_getPrototypeOf2, [this].concat(args)));
     _this._delegate = null;
     return _this;
   }
 
   _createClass(BaseComponent, [{
-    key: 'rawMarkup',
+    key: "rawMarkup",
     value: function rawMarkup(text) {
-      var md = new _remarkable2.default({ html: true, breaks: true });
+      var md = new _remarkable["default"]({
+        html: true,
+        breaks: true
+      });
       return md.render(text);
     }
   }, {
-    key: 'static',
+    key: "static",
     value: function _static(asset) {
-      return '/static/' + asset;
+      return "/static/".concat(asset);
     }
   }, {
-    key: 'request',
+    key: "request",
     get: function get() {
       return this.props.__request || this.context.request;
     }
   }, {
-    key: 'response',
+    key: "response",
     get: function get() {
       return this.props.__response || this.context.response;
     }
   }, {
-    key: 'i18n',
+    key: "i18n",
     get: function get() {
       return this.request.i18n;
     }
   }, {
-    key: 'delegate',
+    key: "delegate",
     set: function set(value) {
       this._delegate = value;
       this.props.delegate = value;
@@ -97,48 +105,56 @@ var BaseComponent = exports.BaseComponent = function (_React$Component) {
       return this._delegate;
     }
   }], [{
-    key: 'contextTypes',
+    key: "contextTypes",
     get: function get() {
       return {
-        request: _propTypes2.default.object,
-        response: _propTypes2.default.object
+        request: _propTypes["default"].object,
+        response: _propTypes["default"].object
       };
     }
   }]);
 
   return BaseComponent;
-}(_react2.default.Component);
+}(_react["default"].Component);
 
-var Head = exports.Head = function (_BaseComponent) {
+exports.BaseComponent = BaseComponent;
+
+var Head =
+/*#__PURE__*/
+function (_BaseComponent) {
   _inherits(Head, _BaseComponent);
 
   function Head() {
     _classCallCheck(this, Head);
 
-    return _possibleConstructorReturn(this, (Head.__proto__ || Object.getPrototypeOf(Head)).apply(this, arguments));
+    return _possibleConstructorReturn(this, _getPrototypeOf(Head).apply(this, arguments));
   }
 
   _createClass(Head, [{
-    key: 'render',
+    key: "render",
     value: function render() {
-      return _react2.default.createElement(_reactHelmet2.default, this.props);
+      return _react["default"].createElement(_reactHelmet["default"], this.props);
     }
   }]);
 
   return Head;
 }(BaseComponent);
 
-var Link = exports.Link = function (_BaseComponent2) {
+exports.Head = Head;
+
+var Link =
+/*#__PURE__*/
+function (_BaseComponent2) {
   _inherits(Link, _BaseComponent2);
 
   function Link() {
     _classCallCheck(this, Link);
 
-    return _possibleConstructorReturn(this, (Link.__proto__ || Object.getPrototypeOf(Link)).apply(this, arguments));
+    return _possibleConstructorReturn(this, _getPrototypeOf(Link).apply(this, arguments));
   }
 
   _createClass(Link, [{
-    key: 'handleClick',
+    key: "handleClick",
     value: function handleClick(event) {
       var allowTransition = true;
 
@@ -152,41 +168,38 @@ var Link = exports.Link = function (_BaseComponent2) {
 
       if (event.defaultPrevented === true) {
         allowTransition = false;
-      }
+      } // If target prop is set (e.g. to "_blank") let browser handle link.
 
-      // If target prop is set (e.g. to "_blank") let browser handle link.
+
       if (this.props.target) {
         if (!allowTransition) {
           event.preventDefault();
         }
+
         return;
       }
 
       event.preventDefault();
 
       if (allowTransition) {
-        var _props = this.props,
-            state = _props.state,
-            params = _props.params;
-
-
+        var _this$props = this.props,
+            state = _this$props.state,
+            params = _this$props.params;
         this.response.navigate(state, params);
       }
     }
   }, {
-    key: 'render',
+    key: "render",
     value: function render() {
       var props = {};
-      var _props2 = this.props,
-          state = _props2.state,
-          params = _props2.params,
-          className = _props2.className,
-          activeClassName = _props2.activeClassName,
-          children = _props2.children,
-          style = _props2.style,
-          title = _props2.title;
-
-
+      var _this$props2 = this.props,
+          state = _this$props2.state,
+          params = _this$props2.params,
+          className = _this$props2.className,
+          activeClassName = _this$props2.activeClassName,
+          children = _this$props2.children,
+          style = _this$props2.style,
+          title = _this$props2.title;
       props.href = _routing.Utils.reverse(state, this.request, params);
 
       if (className) {
@@ -196,7 +209,7 @@ var Link = exports.Link = function (_BaseComponent2) {
       if (activeClassName) {
         if (this.request && this.request.absoluteUrl.endsWith(props.href)) {
           if (className) {
-            props.className += ' ' + activeClassName;
+            props.className += " ".concat(activeClassName);
           } else {
             props.className = activeClassName;
           }
@@ -212,16 +225,17 @@ var Link = exports.Link = function (_BaseComponent2) {
       }
 
       props.children = children;
-
-      return _react2.default.createElement('a', _extends({}, props, { onClick: this.handleClick.bind(this) }));
+      return _react["default"].createElement("a", _extends({}, props, {
+        onClick: this.handleClick.bind(this)
+      }));
     }
   }], [{
-    key: 'isLeftClickEvent',
+    key: "isLeftClickEvent",
     value: function isLeftClickEvent(event) {
       return event.button === 0;
     }
   }, {
-    key: 'isModifiedEvent',
+    key: "isModifiedEvent",
     value: function isModifiedEvent(event) {
       return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
     }
@@ -229,3 +243,5 @@ var Link = exports.Link = function (_BaseComponent2) {
 
   return Link;
 }(BaseComponent);
+
+exports.Link = Link;

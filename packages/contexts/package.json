@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/contexts",
-  "version": "3.0.24",
+  "version": "3.1.0",
   "description": "OutlineJS Contexts (Request/Response/Runtime) Package",
   "main": "dist/index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "@outlinejs/routing": "^3.0.18",
     "@outlinejs/translation": "^3.0.3",
     "hasher": "^1.2.0",
-    "html5-history-api": "^4.2.7"
+    "html5-history-api": "^4.2.10"
   },
   "publishConfig": {
     "access": "public"

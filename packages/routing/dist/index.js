@@ -1,45 +1,52 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 exports.url = url;
 exports.include = include;
+exports.IncludeDefinition = exports.Utils = void 0;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _stateRouteMapping = {};
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-var Utils = exports.Utils = function () {
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+global.__ojsStateRouteMapping = {};
+
+var Utils =
+/*#__PURE__*/
+function () {
   function Utils() {
     _classCallCheck(this, Utils);
   }
 
   _createClass(Utils, null, [{
-    key: 'reverse',
+    key: "reverse",
     value: function reverse(state, request) {
       var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var callback = global.__ojsStateRouteMapping[state];
 
-      var callback = _stateRouteMapping[state];
       if (!callback) {
-        throw 'State \'' + state + '\' is not registered.';
+        throw "State '".concat(state, "' is not registered.");
       }
+
       var reversedUrl = callback(params);
+
       if (reversedUrl === '/') {
         reversedUrl = '';
       }
-      return '/' + reversedUrl;
+
+      return "/".concat(reversedUrl);
     }
   }, {
-    key: 'mapRoute',
+    key: "mapRoute",
     value: function mapRoute(state, callback) {
-      _stateRouteMapping[state] = callback;
+      global.__ojsStateRouteMapping[state] = callback;
     }
   }, {
-    key: 'activeCssClass',
+    key: "activeCssClass",
     value: function activeCssClass(state, request) {
       var cssClass = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'active';
 
@@ -52,7 +59,11 @@ var Utils = exports.Utils = function () {
   return Utils;
 }();
 
-var UrlDefinition = function () {
+exports.Utils = Utils;
+
+var UrlDefinition =
+/*#__PURE__*/
+function () {
   function UrlDefinition(state, controller) {
     _classCallCheck(this, UrlDefinition);
 
@@ -61,12 +72,12 @@ var UrlDefinition = function () {
   }
 
   _createClass(UrlDefinition, [{
-    key: 'state',
+    key: "state",
     get: function get() {
       return this._state;
     }
   }, {
-    key: 'controller',
+    key: "controller",
     get: function get() {
       return this._controller;
     }
@@ -75,7 +86,9 @@ var UrlDefinition = function () {
   return UrlDefinition;
 }();
 
-var IncludeDefinition = exports.IncludeDefinition = function () {
+var IncludeDefinition =
+/*#__PURE__*/
+function () {
   function IncludeDefinition(router) {
     _classCallCheck(this, IncludeDefinition);
 
@@ -83,7 +96,7 @@ var IncludeDefinition = exports.IncludeDefinition = function () {
   }
 
   _createClass(IncludeDefinition, [{
-    key: 'router',
+    key: "router",
     get: function get() {
       return this._router;
     }
@@ -91,6 +104,8 @@ var IncludeDefinition = exports.IncludeDefinition = function () {
 
   return IncludeDefinition;
 }();
+
+exports.IncludeDefinition = IncludeDefinition;
 
 function url(state, controller) {
   var urlDefinition = [];

@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/boot",
-  "version": "3.0.24",
+  "version": "3.1.0",
   "description": "OutlineJS Boot Package",
   "main": "dist/index.js",
   "scripts": {

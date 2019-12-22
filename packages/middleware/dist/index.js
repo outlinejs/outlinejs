@@ -1,14 +1,13 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.locale = undefined;
+exports.locale = void 0;
 
-var _locale2 = require('./locale');
+var _locale2 = _interopRequireDefault(require("./locale"));
 
-var _locale3 = _interopRequireDefault(_locale2);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var locale = exports.locale = _locale3.default;
+var locale = _locale2["default"];
+exports.locale = locale;

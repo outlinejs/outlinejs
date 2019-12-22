@@ -1,6 +1,6 @@
 {
   "name": "@outlinejs/controllers",
-  "version": "3.0.24",
+  "version": "3.1.0",
   "description": "OutlineJS Controllers Package",
   "main": "dist/index.js",
   "scripts": {
@@ -16,13 +16,9 @@
     "url": "https://github.com/outlinejs/outlinejs/issues"
   },
   "homepage": "https://github.com/outlinejs/outlinejs#readme",
-  "peerDependencies": {
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2"
-  },
   "dependencies": {
     "@outlinejs/contexts": "^3.0.24",
-    "react-helmet": "^4.0.0"
+    "react-helmet": "^5.2.1"
   },
   "publishConfig": {
     "access": "public"

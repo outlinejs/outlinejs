@@ -1,8 +1,8 @@
-let _stateRouteMapping = {};
+global.__ojsStateRouteMapping = {};
 
 export class Utils {
   static reverse(state, request, params = {}) {
-    let callback = _stateRouteMapping[state];
+    let callback = global.__ojsStateRouteMapping[state];
     if (!callback) {
       throw `State '${state}' is not registered.`;
     }
@@ -14,7 +14,7 @@ export class Utils {
   }
 
   static mapRoute(state, callback) {
-    _stateRouteMapping[state] = callback;
+    global.__ojsStateRouteMapping[state] = callback;
   }
 
   static activeCssClass(state, request, cssClass = 'active') {

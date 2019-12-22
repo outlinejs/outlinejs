@@ -7,6 +7,7 @@ export class BaseRouter {
   static init() {
     if (runtime.isServer) {
       crossroads.ignoreState = true;
+      //TODO: bello!
       crossroads.bypassed.add((req, res) => {
         res.writeHead(404, {'Content-Type': 'text/html'});
         res.end('<html><body><h1>HTTP 404 - Page Not Found</h1><hr/><p>OutlineJS Server</p></body></html>');
@@ -28,7 +29,7 @@ export class BaseRouter {
         item = `${item}/`;
       }
 
-      if (urlPattern instanceof IncludeDefinition) {
+      if (urlPattern.router) {
         // init a sub router modules
         urlPattern.router.loadRoutes(`${prefix}${item}`);
       } else {

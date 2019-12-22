@@ -14,9 +14,10 @@ export default class Boot {
    * @param {BaseSettings} settingsClass - The project settings class
    * @param {BaseRouter} routerClass - The main router class defined in main urls.js module
    * @param {string} containerNodeId - The node id where to render the view layer
+   * @param {string} serverHtmlTemplate - The html template for server-side rendering
    */
-  static init(settingsClass, routerClass, containerNodeId) {
+  static init(settingsClass, routerClass, containerNodeId, serverHtmlTemplate) {
     confInit(settingsClass);
-    contextInit(containerNodeId, routerClass);
+    contextInit(containerNodeId, routerClass, serverHtmlTemplate);
   }
 }

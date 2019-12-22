@@ -5,7 +5,16 @@ import {settings} from '@outlinejs/conf';
 import {Utils as RouteUtils} from '@outlinejs/routing';
 import {EventEmitter} from 'events';
 
-export let runtime = null;
+
+export let runtime = new Proxy({}, {
+  get(target, name) {
+    return global.__ojsRuntime[name];
+  },
+  set(target, name, value) {
+    global.__ojsRuntime[name] = value;
+    return true;
+  }
+});
 
 export class DecorableContext {
   decorate(component) {
@@ -169,7 +178,7 @@ export class RequestContext extends DecorableContext {
 }
 
 class RuntimeContext {
-  constructor(containerNodeId) {
+  constructor(containerNodeId, serverHtmlTemplate) {
     this._routerClass = null;
     this._containerNodeId = containerNodeId;
     this._serverRenderContainerPattern = new RegExp(`(id=\"${containerNodeId}\"[^\>]*>?)(.*?)(<\/)`);
@@ -183,7 +192,7 @@ class RuntimeContext {
         document.getElementsByTagName('body')[0].appendChild(mainDiv);
       }
     } else {
-      let html = require('__main_html');
+      let html = serverHtmlTemplate;
       html = html.replace(/"((?:[^"]*?)\.(?:js|css))"/g, '"/$1"');
       this._renderContainerObject = html;
     }
@@ -318,14 +327,15 @@ class RuntimeContext {
   }
 }
 
-export function _init(containerNodeId, routerClass) {
-  runtime = new RuntimeContext(containerNodeId);
+export function _init(containerNodeId, routerClass, serverHtmlTemplate) {
+  const r = new RuntimeContext(containerNodeId, serverHtmlTemplate);
+  global.__ojsRuntime = r;
   routerClass.init();
-  runtime.routerClass = routerClass;
-  if (runtime.isClient) {
-    runtime.runClient();
+  r.routerClass = routerClass;
+  if (r.isClient) {
+    r.runClient();
   } else {
-    runtime.runServer();
+    r.runServer();
   }
 }
 
