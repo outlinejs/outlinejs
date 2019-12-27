@@ -32,7 +32,6 @@ function () {
       var currentDictionary = global.__ojsTranslationDictionaries[this._language];
 
       if (currentDictionary) {
-        console.log(currentDictionary.gettext(msgid));
         return currentDictionary.gettext(msgid);
       }
 
